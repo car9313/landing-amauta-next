@@ -3,14 +3,15 @@
 import { motion, AnimatePresence } from "motion/react";
 import { AmautaButton } from "./ui/amauta-button";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/locale/hooks/useLanguage";
 
 const NAV_ITEMS = [
-  { label: "Inicio", id: "#inicio" },
-  { label: "El problema", id: "#problemas" },
-  { label: "Cómo funciona", id: "#como-funciona" },
-  { label: "La solución", id: "#soluciones" },
-  { label: "Encuesta", id: "#encuesta" },
-  { label: "FAQ", id: "#faq" },
+  { key: "inicio", id: "#inicio" },
+  { key: "problemas", id: "#problemas" },
+  { key: "comoFunciona", id: "#como-funciona" },
+  { key: "soluciones", id: "#soluciones" },
+  { key: "encuesta", id: "#encuesta" },
+  { key: "faq", id: "#faq" },
 ] as const;
 
 interface MobileMenuProps {
@@ -30,6 +31,7 @@ export function MobileMenu({
   onStartClick,
   onNavigate,
 }: MobileMenuProps) {
+  const { t } = useLanguage();
   return (
     <AnimatePresence>
       {open && (
@@ -53,7 +55,7 @@ export function MobileMenu({
 
                 return (
                   <motion.div
-                    key={item.label}
+                    key={item.key}
                     initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -16 }}
@@ -71,7 +73,7 @@ export function MobileMenu({
                           : "text-foreground hover:bg-amauta-blue-light hover:text-amauta-blue",
                       )}
                     >
-                      {item.label}
+                      {t(`navigation:items.${item.key}`)}
                     </a>
                   </motion.div>
                 );
@@ -91,7 +93,7 @@ export function MobileMenu({
                   amautaVariant="accent"
                   className="w-full font-black py-3 px-6 min-h-[44px] text-sm uppercase tracking-wide"
                 >
-                  Comenzar Gratis
+                  {t('common:startNow')}
                 </AmautaButton>
               </motion.div>
             </div>

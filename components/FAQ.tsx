@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from 'motion/react'
 import { HelpCircle, ChevronDown } from 'lucide-react'
 import { SectionHeader } from '@/components/ui/section-header'
 import { FAQ_ITEMS } from '@/app/utils/constants/faq'
+import { useLanguage } from '@/lib/locale/hooks/useLanguage'
 
 export default function FAQ() {
+  const { t } = useLanguage()
   const [openId, setOpenId] = useState<string | null>(null)
 
   const toggle = (id: string) => {
@@ -23,9 +25,9 @@ export default function FAQ() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeader
-          badge={{ icon: HelpCircle, text: "Resuelve tus dudas" }}
-          title={<>¿Tienes preguntas?<br /><span className="text-amauta-orange">Aquí las respondemos</span></>}
-          description="Sabemos que probar algo nuevo genera dudas. Estas son las más comunes."
+          badge={{ icon: HelpCircle, text: t('faq:badge') }}
+          title={<>{t('faq:titleLine1')}<br /><span className="text-amauta-orange">{t('faq:titleLine2')}</span></>}
+          description={t('faq:description')}
         />
 
         <div className="relative mx-auto max-w-3xl">
@@ -65,7 +67,7 @@ export default function FAQ() {
                     aria-expanded={isOpen}
                   >
                     <span className="text-sm font-black text-amauta-blue-dark sm:text-base">
-                      {item.question}
+                      {t(`faq:items.${item.id}.question`)}
                     </span>
 
                     <motion.div
@@ -89,7 +91,7 @@ export default function FAQ() {
                       >
                         <div className="border-t border-slate-100 px-6 pb-6 pt-4 sm:px-8 sm:pb-7 sm:pt-5">
                           <p className="text-sm font-medium leading-relaxed text-slate-600 sm:text-base">
-                            {item.answer}
+                            {t(`faq:items.${item.id}.answer`)}
                           </p>
                         </div>
                       </motion.div>

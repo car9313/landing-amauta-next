@@ -1,0 +1,29 @@
+{
+  "badge": "No complex jargon",
+  "title": "How Amauta works",
+  "description": "A natural cycle where the student takes the helm of their own progress and adults have full visibility.",
+  "mechanism": "Step {{stepNumber}}",
+  "steps": {
+    "1": {
+      "title": "Your child plays and practices",
+      "subtitle": "Interactive exercises adapted to their age",
+      "description": "No boring worksheets — lessons that feel like an interactive game designed to capture their attention.",
+      "caption": "Game mode",
+      "imageAlt": "The Amauta mascot accompanying a child while practicing with a tablet in a fun and educational setting"
+    },
+    "2": {
+      "title": "Amauta learns how they learn",
+      "subtitle": "The app calibrates itself step by step, naturally",
+      "description": "Every answer tells Amauta what they know, what's hard and what to review. The next exercise is always the right one.",
+      "caption": "Smart adaptation",
+      "imageAlt": "The Amauta mascot analyzing results with smooth charts, learning paths and a thoughtful expression"
+    },
+    "3": {
+      "title": "You see their real progress",
+      "subtitle": "Monitor with total peace of mind",
+      "description": "Not a grade. Not a generic percentage. You know exactly what they're advancing on and where they need more practice.",
+      "caption": "Visible progress",
+      "imageAlt": "The Amauta mascot showing a progress dashboard with rising charts, medals and milestone states"
+    }
+  }
+}

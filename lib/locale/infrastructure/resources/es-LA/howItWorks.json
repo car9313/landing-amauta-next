@@ -1,0 +1,29 @@
+{
+  "badge": "Sin jerga técnica compleja",
+  "title": "Cómo funciona Amauta",
+  "description": "Un ciclo natural donde el estudiante toma el timón de su propio avance y los adultos tienen visibilidad plena.",
+  "mechanism": "Mecanismo {{stepNumber}}",
+  "steps": {
+    "1": {
+      "title": "Tu hijo juega y practica",
+      "subtitle": "Ejercicios interactivos adaptados a su edad",
+      "description": "Nada de fichas aburridas — lecciones que parecen un juego interactivo pensado especialmente para captar su atención.",
+      "caption": "Modo juego",
+      "imageAlt": "La mascota de Amauta acompañando a un niño mientras practica con una tableta en un entorno divertido y educativo"
+    },
+    "2": {
+      "title": "Amauta aprende cómo aprende él",
+      "subtitle": "La app se calibra paso a paso de forma natural",
+      "description": "Cada respuesta le dice a Amauta qué sabe, qué le cuesta y qué necesita repasar. El siguiente ejercicio siempre es el adecuado.",
+      "caption": "Adaptación inteligente",
+      "imageAlt": "La mascota de Amauta analizando resultados con gráficos suaves, rutas de aprendizaje y una expresión pensativa"
+    },
+    "3": {
+      "title": "Tú ves su progreso real",
+      "subtitle": "Monitorea con total tranquilidad y cercanía",
+      "description": "No una nota. No un porcentaje genérico. Sabes exactamente en qué está avanzando y dónde necesita más práctica.",
+      "caption": "Progreso visible",
+      "imageAlt": "La mascota de Amauta mostrando un panel de progreso con gráficos ascendentes, medallas y estados de avance"
+    }
+  }
+}

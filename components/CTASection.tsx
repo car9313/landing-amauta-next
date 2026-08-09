@@ -1,12 +1,15 @@
 'use client';
 
 import { Award } from 'lucide-react';
+import { useLanguage } from '@/lib/locale/hooks/useLanguage';
 
 interface CTASectionProps {
   onParentCTA: () => void;
 }
 
 export default function CTASection({ onParentCTA }: CTASectionProps) {
+  const { t } = useLanguage();
+
   return (
     <section
       id="empieza-ahora"
@@ -22,13 +25,11 @@ export default function CTASection({ onParentCTA }: CTASectionProps) {
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight uppercase font-sans">
-          Tu hijo puede empezar hoy.
+          {t('cta:title')}
         </h2>
 
         <p className="text-base sm:text-lg text-slate-100 font-extrabold max-w-2xl mx-auto">
-          Sin esperas, sin tarjeta de crédito, sin complicaciones. Creas tu
-          cuenta, añades a tu hijo y en dos minutos ya está aprendiendo a su
-          ritmo.
+          {t('cta:description')}
         </p>
 
         <div className="pt-4 space-y-4">
@@ -36,11 +37,10 @@ export default function CTASection({ onParentCTA }: CTASectionProps) {
             onClick={onParentCTA}
             className="bg-amauta-orange text-amauta-surface rounded-xl font-black text-base py-4 px-10 shadow-lg hover:bg-amauta-orange-dark hover-lift hover-glow transition-all min-h-[44px] cursor-pointer inline-flex items-center gap-2 border-none"
           >
-            <span>Empieza gratis con tu hijo →</span>
+            <span>{t('cta:cta')}</span>
           </button>
           <p className="text-xs font-semibold text-slate-300">
-            Acceso anticipado abierto · Para niños de 3 a 9 años · Sin
-            compromiso
+            {t('cta:note')}
           </p>
         </div>
       </div>

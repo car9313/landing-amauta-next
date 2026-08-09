@@ -1,0 +1,50 @@
+{
+  "badge": "Community Survey",
+  "title": "Are you interested in Amauta?",
+  "description": "Your opinion is very valuable to build the best holistic learning journey. Take this quick survey and see what other families think.",
+  "q1": "1. How excited are you about Amauta for your children / students?",
+  "required": "*",
+  "interestOptions": {
+    "high": { "label": "I love it!", "subtitle": "Would use it without hesitating" },
+    "medium": { "label": "I'm interested", "subtitle": "I'd like to try it" },
+    "low": { "label": "Not sure yet", "subtitle": "I have some doubts" }
+  },
+  "q2": "2. Which feature attracts you the most?",
+  "features": {
+    "mascot": { "title": "The Amauta mascot", "desc": "Condor that guides and reacts playfully" },
+    "games": { "title": "Mini interactive challenges", "desc": "Fun challenges based on the Andean worldview" },
+    "dashboard": { "title": "Achievements panel for parents", "desc": "Skills tracking through real medals" },
+    "offline": { "title": "Full Offline Mode", "desc": "Works safely on trips without using your data" }
+  },
+  "q3": "3. Do you have any contribution or comment the team should know? (Optional)",
+  "q3Placeholder": "Write your ideas, questions or observations here...",
+  "q4": "What's your name? (Optional)",
+  "q4Placeholder": "e.g. Sofia's dad",
+  "submit": "Submit my vote",
+  "submitting": "Sending...",
+  "notifVoteOk": "Vote registered successfully!",
+  "notifSyncOk": "Your vote synced successfully!",
+  "notifPending": "Saved locally. It will sync when there's a connection.",
+  "validationError": "Please select your interest level and a favorite feature.",
+  "thanksTitle": "Your opinion counts, thank you! 🧭🦉",
+  "thanksBody": "We've counted your response. Check the overview of surveyed families.",
+  "statsHeading": "Community Stats — {{total}} families surveyed",
+  "statsEmpty": "Not enough data yet. Percentages will appear as more people vote.",
+  "statLove": "I love it! I'd definitely use it",
+  "statInterest": "I'm interested, we'd like to try it free",
+  "statUnsure": "I'm not sure yet, I have my doubts",
+  "featureHighlight": "{{pct}}% highlight {{feature}}",
+  "featureLabels": {
+    "prefMascot": "the company of the Amauta mascot",
+    "prefGames": "interactive Andean game mechanics",
+    "prefDashboard": "the achievements panel for parents",
+    "prefOffline": "the full offline mode"
+  },
+  "featureEmojis": {
+    "prefMascot": "🦉",
+    "prefGames": "🎮",
+    "prefDashboard": "📈",
+    "prefOffline": "🎒"
+  },
+  "closingNote": "Liked the idea? Reserve your gift spot by filling in the enrollment section below."
+}

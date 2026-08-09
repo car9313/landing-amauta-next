@@ -3,8 +3,11 @@
 import Image from 'next/image'
 import { motion } from 'motion/react'
 import { Gift } from 'lucide-react'
+import { useLanguage } from '@/lib/locale/hooks/useLanguage'
 
 export default function PricingCallout() {
+  const { t } = useLanguage()
+
   return (
     <section className="relative overflow-hidden border-y border-slate-100 bg-white py-14 sm:py-18">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#f97316_0.5px,transparent_0.5px)] [background-size:24px_24px] opacity-[0.03]" />
@@ -21,31 +24,31 @@ export default function PricingCallout() {
         </div>
 
         <h3 className="text-2xl font-black tracking-tight text-amauta-blue-dark sm:text-3xl">
-          Sin compromisos. Sin tarjeta.
+          {t('pricing:title')}
         </h3>
 
         <p className="mx-auto mt-3 max-w-2xl text-base font-semibold leading-relaxed text-slate-600">
-          Mientras dure el acceso anticipado, todo es <span className="text-amauta-orange">completamente gratuito</span>.
-          Sin fecha de vencimiento oculta. Sin cargos sorpresa.
-          Cuando definamos el modelo definitivo, quienes empezaron antes tendrán beneficios exclusivos.
+          {t('pricing:descriptionPrefix')}
+          <span className="text-amauta-orange">{t('pricing:highlighted')}</span>
+          {t('pricing:descriptionTail')}
         </p>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs font-bold text-slate-400">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5">
-            ✅ Sin tarjeta de crédito
+            ✅ {t('pricing:badges.creditCard')}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5">
-            ✅ Acceso completo desde el día 1
+            ✅ {t('pricing:badges.fullAccess')}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5">
-            ✅ Beneficios de early adopter
+            ✅ {t('pricing:badges.earlyAdopter')}
           </span>
         </div>
       </motion.div>
 
       <Image
         src="/img/amauta-table.webp"
-        alt="Tabla comparativa de planes Amauta"
+        alt={t('pricing:imageAlt')}
         width={1200}
         height={675}
         className="mx-auto mt-12 h-auto w-36  sm:w-40 md:w-48"

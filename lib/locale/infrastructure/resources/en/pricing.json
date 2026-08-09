@@ -1,0 +1,12 @@
+{
+  "title": "No commitments. No card.",
+  "descriptionPrefix": "For as long as early access lasts, everything is ",
+  "highlighted": "completely free",
+  "descriptionTail": ". No hidden expiry date. No surprise charges. When we define the final plan, those who started early will get exclusive perks.",
+  "badges": {
+    "creditCard": "✅ No credit card",
+    "fullAccess": "✅ Full access from day 1",
+    "earlyAdopter": "✅ Early adopter perks"
+  },
+  "imageAlt": "Amauta plan comparison table"
+}

@@ -1,0 +1,33 @@
+{
+  "badge": "The solution",
+  "titleLine1": "Amauta is not just another educational app.",
+  "titleLine2": "It's the one you needed.",
+  "description": "We don't create more generic content. We created the tool that was missing so your child learns at their own pace, without depending on wifi.",
+  "items": {
+    "adaptive": {
+      "title": "Adapts to their pace",
+      "description": "Not everyone learns the same way. Amauta adjusts the exercises to what your child knows and needs to practice, step by step."
+    },
+    "offline": {
+      "title": "Works without internet",
+      "description": "Most apps go blank without wifi. Amauta works anywhere — at home, in the car, on the go."
+    },
+    "progress": {
+      "title": "See their real progress",
+      "description": "No generic grades. You know exactly what they master and what needs reinforcement, in real time."
+    }
+  },
+  "earlyBadge": "Early access",
+  "earlyTitle": "Be among the first to use Amauta",
+  "earlyDescription": "Families joining now don't just use the app — they help build it. Your feedback decides what gets built first, and for as long as this phase lasts, everything is completely free. No commitments, no hidden costs.",
+  "perks": {
+    "day1": { "title": "Full access from day 1", "subtitle": "Every feature, no restrictions" },
+    "voice": { "title": "Your feedback shapes the app", "subtitle": "You decide what gets built first" },
+    "free": { "title": "100% free during early access", "subtitle": "No card, no commitments" }
+  },
+  "cta": "Start free now →",
+  "offlineBadge": "Always available. No matter what happens with the wifi.",
+  "offlineTitle": "Most educational apps need a connection to work. Amauta doesn't.",
+  "offlineText": "Once installed on your child's device, it works the same with wifi as without it — at home, in the car, at grandma's village. When the connection returns, everything syncs on its own. Without losing anything, without your child having to do anything.",
+  "offlineQuote": "Because learning shouldn't depend on wifi."
+}

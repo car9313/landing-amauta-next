@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Trophy, Award, Medal, Star, Crown, Lock, Globe, Sparkles, RefreshCw, Smile, Heart, Check } from 'lucide-react';
+import { Trophy, Award, Medal, Star, Crown, Lock, RefreshCw, Smile } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface MedalItem {
@@ -8,7 +9,7 @@ interface MedalItem {
   title: string;
   description: string;
   howToUnlock: string;
-  icon: React.ComponentType<any>;
+  icon: LucideIcon;
   colorClass: string;
   unlocked: boolean;
   scoreGained: number;
@@ -197,7 +198,7 @@ export default function AchievementsPanel() {
               {/* Character dialog bubble inside progress scorecard */}
               <div className="p-4 bg-amauta-blue-light/50 border border-amauta-blue/15 rounded-2xl relative">
                 <p className="text-xs sm:text-sm font-bold text-amauta-blue-dark leading-relaxed">
-                  🦉 <strong>Consejo de Amauta:</strong> "¡Increíble Tomás! Estás a solo {250 - stars} estrellas de subir de nivel. Prueba pulsar una medalla bloqueada de la derecha para ver cómo conseguirla."
+                  🦉 <strong>Consejo de Amauta:</strong> &ldquo;¡Increíble Tomás! Estás a solo {250 - stars} estrellas de subir de nivel. Prueba pulsar una medalla bloqueada de la derecha para ver cómo conseguirla.&rdquo;
                 </p>
                 <div className="absolute top-1/2 -right-3 -translate-y-1/2 w-4 h-4 bg-amauta-blue-light/50 border-r border-t border-amauta-blue/15 rotate-45 hidden lg:block" />
               </div>

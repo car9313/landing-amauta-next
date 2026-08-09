@@ -1,0 +1,11 @@
+{
+  "items": {
+    "inicio": "Home",
+    "problemas": "The problem",
+    "comoFunciona": "How it works",
+    "soluciones": "The solution",
+    "encuesta": "Survey",
+    "faq": "FAQ"
+  },
+  "selectLanguage": "Select language"
+}

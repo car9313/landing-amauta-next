@@ -6,7 +6,9 @@ import { AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { SectionHeader } from '@/components/ui/section-header';
-import { problems } from '@/app/utils/constants/features';
+import { useLanguage } from '@/lib/locale/hooks/useLanguage';
+
+const PROBLEM_IDS = ['deberes', 'ritmo', 'wifi'] as const;
 
 
 const containerVariants = {
@@ -32,6 +34,8 @@ const itemVariants: Variants = {
 };
 
 export default function Problems() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="problemas"
@@ -43,10 +47,10 @@ export default function Problems() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-orange-300/40 to-transparent" />
 
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <SectionHeader
-          badge={{ icon: AlertCircle, text: "El problema" }}
-          title={<>Nadie lo dice en voz alta,<br /><span className="text-amauta-orange">pero todos lo sienten</span></>}
-          description="¿Te sientes identificado con alguna de estas situaciones diarias con tus hijos?"
+<SectionHeader
+          badge={{ icon: AlertCircle, text: t('problems:badge') }}
+          title={<><span>{t('problems:titleLine1')}</span><br /><span className="text-amauta-orange">{t('problems:titleLine2')}</span></>}
+          description={t('problems:description')}
         />
 
         {/* Grid de problemas */}
@@ -57,9 +61,9 @@ export default function Problems() {
           viewport={{ once: true, margin: '-120px' }}
           className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8"
         >
-          {problems.map((prob) => (
+          {PROBLEM_IDS.map((probId) => (
             <motion.div
-              key={prob.id}
+              key={probId}
               variants={itemVariants}
               className="group h-full"
             >
@@ -81,8 +85,8 @@ export default function Problems() {
                         className="h-full w-full"
                       >
                         <Image
-                          src={prob.imgSrc}
-                          alt="Mascota Amauta"
+                          src={`/img/img${PROBLEM_IDS.indexOf(probId) + 1}.webp`}
+                          alt={t('problems:mascotAlt')}
                           width={288}
                           height={288}
                           className="h-full w-full select-none object-contain drop-shadow-[0_18px_24px_rgba(15,23,42,0.16)]"
@@ -92,15 +96,15 @@ export default function Problems() {
                   </div>
 
                   <h3 className="mb-3 text-lg font-black tracking-tight text-amauta-blue-dark sm:text-xl">
-                    {prob.title}
+                    {t(`problems:items.${probId}.title`)}
                   </h3>
 
                   <p className="mb-3 text-sm font-extrabold leading-relaxed text-slate-900 sm:text-base">
-                    {prob.pain}
+                    {t(`problems:items.${probId}.pain`)}
                   </p>
 
                   <p className="text-xs font-medium leading-relaxed text-slate-500 sm:text-sm">
-                    {prob.consequence}
+                    {t(`problems:items.${probId}.consequence`)}
                   </p>
                 </div>
               </Card>

@@ -1,0 +1,32 @@
+{
+  "badge": "Get your questions answered",
+  "titleLine1": "Got questions?",
+  "titleLine2": "Here are the answers",
+  "description": "We know trying something new raises questions. These are the most common one.",
+  "items": {
+    "edad": {
+      "question": "What age is Amauta designed for?",
+      "answer": "Recommended for children 6 to 12 years old (elementary school). Content and challenges are designed for that range, adapting to each child's pace."
+    },
+    "reemplazo": {
+      "question": "Does Amauta replace school or the teacher?",
+      "answer": "No. Amauta is a complement. It helps reinforce what was learned in class through fun challenges, but it doesn't replace formal education or a teacher's guidance."
+    },
+    "dispositivos": {
+      "question": "What devices does it work on?",
+      "answer": "Any device with a web browser: computers, tablets and phones. Also, once installed as an app (PWA), it works without an internet connection."
+    },
+    "supervision": {
+      "question": "What if my child uses it without supervision?",
+      "answer": "The app is designed so the child can play autonomously. You receive progress reports without needing to sit next to them. There's no external internet access or user-generated content."
+    },
+    "privacidad": {
+      "question": "Are my data and my child's data safe?",
+      "answer": "Yes. We don't collect, share or sell children's data. All progress is stored locally on the device. Read more in our Privacy Policy."
+    },
+    "pago": {
+      "question": "Will I have to pay after early access?",
+      "answer": "Everything is free during early access. When we define the final plan, we'll give you plenty of notice and you'll get perks for being here from the start. No surprise charges."
+    }
+  }
+}

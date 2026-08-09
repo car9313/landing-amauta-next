@@ -5,9 +5,19 @@ import { Smile, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { SectionHeader } from '@/components/ui/section-header';
 import { STEPS } from '@/app/utils/constants/howItWorks';
-
+import { useLanguage } from '@/lib/locale/hooks/useLanguage';
 
 export default function HowItWorks() {
+  const { t } = useLanguage();
+  const STEPS_DATA = STEPS.map((step) => ({
+    ...step,
+    title: t(`howItWorks:steps.${step.stepNumber}.title`),
+    subtitle: t(`howItWorks:steps.${step.stepNumber}.subtitle`),
+    description: t(`howItWorks:steps.${step.stepNumber}.description`),
+    caption: t(`howItWorks:steps.${step.stepNumber}.caption`),
+    imageAlt: t(`howItWorks:steps.${step.stepNumber}.imageAlt`),
+  }));
+
   return (
     <section
       id="como-funciona"
@@ -19,16 +29,16 @@ export default function HowItWorks() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeader
-          badge={{ icon: Smile, text: "Sin jerga técnica compleja" }}
-          title={<>Cómo funciona Amauta</>}
-          description="Un ciclo natural donde el estudiante toma el timón de su propio avance y los adultos tienen visibilidad plena."
+          badge={{ icon: Smile, text: t('howItWorks:badge') }}
+          title={<>{t('howItWorks:title')}</>}
+          description={t('howItWorks:description')}
         />
 
         <ol className="relative space-y-14 md:space-y-24">
           {/* Línea de tiempo desktop */}
           <div className="pointer-events-none absolute bottom-4 left-4.5 top-4 hidden w-px border-l border-dashed border-amauta-orange md:left-1/2 md:block md:-translate-x-1/2" />
 
-          {STEPS.map((step, index) => {
+          {STEPS_DATA.map((step, index) => {
             const IconComponent = step.icon;
             const isEven = step.stepNumber % 2 === 0;
 
@@ -100,11 +110,11 @@ export default function HowItWorks() {
                       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm">
                         {step.stepNumber}
                       </span>
-                      Mecanismo {step.stepNumber}
+                      {t('howItWorks:mechanism', { stepNumber: step.stepNumber })}
                     </div>
 
                     <div className="mb-2.5 hidden md:inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amauta-orange">
-                      <span>Mecanismo {step.stepNumber}</span>
+                      <span>{t('howItWorks:mechanism', { stepNumber: step.stepNumber })}</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </div>
 

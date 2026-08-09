@@ -8,6 +8,7 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useLanguage } from '@/lib/locale/hooks/useLanguage';
 
 interface SurveyStats {
   total: number;
@@ -31,13 +32,6 @@ const EMPTY_STATS: SurveyStats = {
   prefOffline: 0,
 }
 
-const FEATURE_LABELS: Record<string, string> = {
-  prefMascot: 'la compañía de la mascota Amauta',
-  prefGames: 'las mecánicas de juegos andinos interactivos',
-  prefDashboard: 'el panel de logros para padres',
-  prefOffline: 'el modo offline completo',
-}
-
 const FEATURE_EMOJIS: Record<string, string> = {
   prefMascot: '🦉',
   prefGames: '🎮',
@@ -45,14 +39,10 @@ const FEATURE_EMOJIS: Record<string, string> = {
   prefOffline: '🎒',
 }
 
-const FEATURES = [
-  { id: 'mascot', emoji: FEATURE_EMOJIS.prefMascot, title: 'La mascota Amauta', desc: 'Cóndor que guía y reacciona de forma lúdica' },
-  { id: 'games', emoji: FEATURE_EMOJIS.prefGames, title: 'Mini Retos interactivos', desc: 'Desafíos lúdicos basados en la cosmovisión andina' },
-  { id: 'dashboard', emoji: FEATURE_EMOJIS.prefDashboard, title: 'Panel de Logros para padres', desc: 'Monitoreo de destrezas mediante medallas reales' },
-  { id: 'offline', emoji: FEATURE_EMOJIS.prefOffline, title: 'Modo Offline Completo', desc: 'Funciona seguro en viajes sin consumir tus datos' },
-] as const;
+const FEATURE_IDS = ['mascot', 'games', 'dashboard', 'offline'] as const;
 
 export default function AmautaSurvey() {
+  const { t } = useLanguage();
   const [voted, setVoted] = useState<boolean | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [levelOfInterest, setLevelOfInterest] = useState<string>('');
@@ -62,10 +52,6 @@ export default function AmautaSurvey() {
   const [stats, setStats] = useState<SurveyStats>(EMPTY_STATS);
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
   const notificationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    setVoted(localStorage.getItem('amauta_interest_survey_completed') === 'true');
-  }, []);
 
   const showNotification = useCallback((type: 'success' | 'error' | 'info', message: string) => {
     setNotification({ type, message });
@@ -94,8 +80,22 @@ export default function AmautaSurvey() {
   }, []);
 
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    const request = fetch('/api/survey/stats')
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`Stats API error: ${res.status}`))))
+      .then((data) => setStats(data.stats))
+      .catch((error) => console.error('Fetch stats failed:', error));
+
+    return () => {
+      request.catch(() => {});
+    };
+  }, []);
+
+  useEffect(() => {
+    // Se lee tras montar (deferido) para no romper la hidratación (SSR vs cliente)
+    const completed = localStorage.getItem('amauta_interest_survey_completed') === 'true';
+    const frame = requestAnimationFrame(() => setVoted(completed));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -113,7 +113,7 @@ export default function AmautaSurvey() {
           localStorage.removeItem('amauta_survey_pending');
           localStorage.setItem('amauta_interest_survey_completed', 'true');
           if (!cancelled) setVoted(true);
-          showNotification('success', '¡Tu voto se sincronizó correctamente!');
+          showNotification('success', t('survey:notifSyncOk'));
           if (!cancelled) await fetchStats();
         }
       } catch {
@@ -122,6 +122,7 @@ export default function AmautaSurvey() {
     };
     sync();
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchStats, showNotification]);
 
   const handleInterestSelect = (value: string) => {
@@ -136,7 +137,7 @@ export default function AmautaSurvey() {
     e.preventDefault();
     if (submitting) return;
     if (!levelOfInterest || !favoriteFeature) {
-      showNotification('info', 'Por favor selecciona tu nivel de interés y una característica favorita.')
+      showNotification('info', t('survey:validationError'))
       return
     }
 
@@ -179,7 +180,7 @@ export default function AmautaSurvey() {
       });
 
       if (res.ok) {
-        showNotification('success', '¡Voto registrado correctamente!');
+        showNotification('success', t('survey:notifVoteOk'));
         fetchStats();
       } else {
         throw new Error('Server error');
@@ -187,7 +188,7 @@ export default function AmautaSurvey() {
     } catch {
       setStats(previousStats);
       localStorage.setItem('amauta_survey_pending', JSON.stringify(voto));
-      showNotification('info', 'Guardado localmente. Se sincronizará cuando haya conexión.');
+      showNotification('info', t('survey:notifPending'));
     } finally {
       setSubmitting(false);
     }
@@ -198,8 +199,12 @@ export default function AmautaSurvey() {
   const interestPct = totalVotes > 0 ? Math.round((stats.interested / totalVotes) * 100) : 0;
   const unsurePct = totalVotes > 0 ? Math.round((stats.unsure / totalVotes) * 100) : 0;
 
-  const sortedFeatures = Object.entries(FEATURE_LABELS)
-    .map(([key, label]) => ({ key, label, count: stats[key as keyof SurveyStats] as number }))
+  const sortedFeatures = (Object.keys(FEATURE_EMOJIS) as Array<keyof typeof FEATURE_EMOJIS>)
+    .map((key) => ({
+      key: key as string,
+      label: t(`survey:featureLabels.${key}`),
+      count: stats[key as keyof SurveyStats] as number,
+    }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 2);
 
@@ -226,9 +231,9 @@ export default function AmautaSurvey() {
 
         {/* Title Header */}
         <SectionHeader
-          badge={{ icon: Sparkles, text: "Encuesta de Comunidad" }}
-          title={<>¿Te interesa Amauta?</>}
-          description="Tu opinión es muy valiosa para construir el mejor viaje de aprendizaje integral. Completa esta encuesta rápida y mira lo que opina el resto de familias."
+          badge={{ icon: Sparkles, text: t('survey:badge') }}
+          title={<>{t('survey:title')}</>}
+          description={t('survey:description')}
         />
 
         {/* Survey Box Layout */}
@@ -289,82 +294,57 @@ export default function AmautaSurvey() {
                 {/* Question 1: Level of interest */}
                 <div className="space-y-3">
                   <label className="text-base sm:text-lg font-black text-amauta-blue-dark block">
-                    1. ¿Qué tanto te entusiasma Amauta para tus niños / alumnos? <span className="text-amauta-orange">*</span>
+                    {t('survey:q1')} <span className="text-amauta-orange">{t('survey:required')}</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => handleInterestSelect('high')}
-                      className={`p-4 rounded-2xl border-2 font-bold text-sm text-left transition-all min-h-[44px] cursor-pointer flex items-center gap-3 ${
-                        levelOfInterest === 'high'
-                          ? 'border-amauta-orange bg-amauta-orange-light/20 text-amauta-orange-dark ring-2 ring-amauta-orange/25'
-                          : 'border-neutral-200 bg-white hover:border-amauta-blue/30 text-foreground/80'
-                      }`}
-                    >
-                      <span className="text-xl">😍</span>
-                      <div>
-                        <span className="block font-extrabold leading-none">¡Me encanta!</span>
-                        <span className="text-[11px] text-foreground/40 mt-1 block">Lo usaría sin dudar</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleInterestSelect('medium')}
-                      className={`p-4 rounded-2xl border-2 font-bold text-sm text-left transition-all min-h-[44px] cursor-pointer flex items-center gap-3 ${
-                        levelOfInterest === 'medium'
-                          ? 'border-amauta-blue bg-amauta-blue-light/40 text-amauta-blue-dark ring-2 ring-amauta-blue/25'
-                          : 'border-neutral-200 bg-white hover:border-amauta-blue/30 text-foreground/80'
-                      }`}
-                    >
-                      <span className="text-xl">🙂</span>
-                      <div>
-                        <span className="block font-extrabold leading-none">Me interesa</span>
-                        <span className="text-[11px] text-foreground/40 mt-1 block">Me gustaría probarlo</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleInterestSelect('low')}
-                      className={`p-4 rounded-2xl border-2 font-bold text-sm text-left transition-all min-h-[44px] cursor-pointer flex items-center gap-3 ${
-                        levelOfInterest === 'low'
-                          ? 'border-neutral-500 bg-neutral-100 text-neutral-800'
-                          : 'border-neutral-200 bg-white hover:border-neutral-400 text-foreground/80'
-                      }`}
-                    >
-                      <span className="text-xl">😐</span>
-                      <div>
-                        <span className="block font-extrabold leading-none">Aún no sé</span>
-                        <span className="text-[11px] text-foreground/40 mt-1 block">Tengo ciertas dudas</span>
-                      </div>
-                    </button>
+                    {(['high', 'medium', 'low'] as const).map((interest) => (
+                      <button
+                        key={interest}
+                        type="button"
+                        onClick={() => handleInterestSelect(interest)}
+                        className={`p-4 rounded-2xl border-2 font-bold text-sm text-left transition-all min-h-[44px] cursor-pointer flex items-center gap-3 ${
+                          levelOfInterest === interest
+                            ? interest === 'high'
+                              ? 'border-amauta-orange bg-amauta-orange-light/20 text-amauta-orange-dark ring-2 ring-amauta-orange/25'
+                              : interest === 'medium'
+                                ? 'border-amauta-blue bg-amauta-blue-light/40 text-amauta-blue-dark ring-2 ring-amauta-blue/25'
+                                : 'border-neutral-500 bg-neutral-100 text-neutral-800'
+                            : 'border-neutral-200 bg-white hover:border-amauta-blue/30 text-foreground/80'
+                        }`}
+                      >
+                        <span className="text-xl">{interest === 'high' ? '😍' : interest === 'medium' ? '🙂' : '😐'}</span>
+                        <div>
+                          <span className="block font-extrabold leading-none">{t(`survey:interestOptions.${interest}.label`)}</span>
+                          <span className="text-[11px] text-foreground/40 mt-1 block">{t(`survey:interestOptions.${interest}.subtitle`)}</span>
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Question 2: Favorite feature */}
+{/* Question 2: Favorite feature */}
                 <div className="space-y-3">
                   <label className="text-base sm:text-lg font-black text-amauta-blue-dark block">
-                    2. ¿Qué característica es la que más te atrae?
-                     <span className="text-amauta-orange">*</span> 
+                    {t('survey:q2')}
+                     <span className="text-amauta-orange">{t('survey:required')}</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    {FEATURES.map((feat) => (
+                    {FEATURE_IDS.map((featId) => (
                       <button
-                        key={feat.id}
+                        key={featId}
                         type="button"
-                        onClick={() => handleFeatureSelect(feat.id)}
-                        aria-pressed={favoriteFeature === feat.id}
+                        onClick={() => handleFeatureSelect(featId)}
+                        aria-pressed={favoriteFeature === featId}
                         className={`p-4 rounded-2xl border border-neutral-200/80 bg-white cursor-pointer hover:border-amauta-blue/40 transition-all flex items-center gap-3 border-l-4 ${
-                          favoriteFeature === feat.id 
+                          favoriteFeature === featId 
                             ? 'border-l-amauta-orange bg-amauta-orange-light/10 ring-1 ring-amauta-orange/15 shadow-sm' 
                             : 'hover:bg-slate-50'
                         }`}
                       >
-                        <span className="text-2xl">{feat.emoji}</span>
+                        <span className="text-2xl">{FEATURE_EMOJIS[`pref${featId.charAt(0).toUpperCase()}${featId.slice(1)}` as keyof typeof FEATURE_EMOJIS]}</span>
                         <div>
-                          <span className="font-extrabold text-sm text-amauta-blue-dark block">{feat.title}</span>
-                          <span className="text-[11.5px] font-medium text-foreground/50 block">{feat.desc}</span>
+                          <span className="font-extrabold text-sm text-amauta-blue-dark block">{t(`survey:features.${featId}.title`)}</span>
+                          <span className="text-[11.5px] font-medium text-foreground/50 block">{t(`survey:features.${featId}.desc`)}</span>
                         </div>
                       </button>
                     ))}
@@ -374,14 +354,14 @@ export default function AmautaSurvey() {
                 {/* Question 3: Comments & suggestions */}
                 <div className="space-y-2">
                   <label className="text-base sm:text-lg font-black text-amauta-blue-dark block">
-                    3. ¿Tienes algún aporte o comentario que deba saber el equipo? (Opcional)
+                    {t('survey:q3')}
                   </label>
                   <Textarea
                     rows={3}
                     maxLength={200}
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    placeholder="Escribe aquí tus ideas, inquietudes u observaciones..."
+                    placeholder={t('survey:q3Placeholder')}
                     className="w-full p-4 rounded-2xl border border-neutral-200 bg-white focus:bg-white focus:border-amauta-orange focus:ring-2 focus:ring-amauta-orange/15 font-semibold text-sm outline-none placeholder:text-foreground/35 min-h-16"
                   />
                 </div>
@@ -390,14 +370,14 @@ export default function AmautaSurvey() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-black uppercase tracking-widest text-amauta-blue-dark block">
-                      ¿Cómo te llamas? (Opcional)
+                      {t('survey:q4')}
                     </label>
                     <Input
                       type="text"
                       maxLength={30}
                       value={nickName}
                       onChange={(e) => setNickName(e.target.value)}
-                      placeholder="Ej. Papá de Sofía"
+                      placeholder={t('survey:q4Placeholder')}
                       className="w-full h-11 rounded-xl border border-neutral-200 px-4 bg-white focus:border-amauta-blue focus:ring-2 focus:ring-amauta-blue/10 outline-none font-bold text-sm"
                     />
                   </div>
@@ -412,7 +392,7 @@ export default function AmautaSurvey() {
                       submitting ? 'opacity-60 cursor-not-allowed' : ''
                     }`}
                   >
-                    <span>{submitting ? 'Enviando...' : 'Enviar mi Voto'}</span>
+                    <span>{submitting ? t('survey:submitting') : t('survey:submit')}</span>
                     <Send className={`w-3.5 h-3.5 ${submitting ? 'animate-spin' : ''}`} />
                   </Button>
                 </div>
@@ -434,10 +414,10 @@ export default function AmautaSurvey() {
                   </div>
                   <div>
                     <h4 className="text-xl sm:text-2xl font-black text-amauta-blue-dark">
-                      ¡Tu opinion cuenta, gracias! 🧭🦉
+                      {t('survey:thanksTitle')}
                     </h4>
                     <p className="text-sm font-semibold text-foreground/50">
-                      Ya contabilizamos tu respuesta. Mira los consolidados de las familias encuestadas.
+                      {t('survey:thanksBody')}
                     </p>
                   </div>
                 </div>
@@ -446,12 +426,12 @@ export default function AmautaSurvey() {
                 <div className="bg-white border border-neutral-200/50 rounded-2xl p-5 sm:p-7 space-y-6 shadow-sm">
                   <div className="flex items-center gap-2 pb-3 border-b border-neutral-100 font-mono text-[10px] font-black uppercase tracking-widest text-amauta-blue">
                     <BarChart2 className="w-4 h-4 text-amauta-orange" />
-                    <span>Estadísticas de la Comunidad — {totalVotes} familias encuestadas</span>
+                    <span>{t('survey:statsHeading', { total: totalVotes })}</span>
                   </div>
 
                   {totalVotes === 0 && (
                     <p className="text-xs text-foreground/50 italic text-center py-4">
-                      Aún no hay suficientes datos. Los porcentajes aparecerán cuando más personas voten.
+                      {t('survey:statsEmpty')}
                     </p>
                   )}
 
@@ -460,7 +440,7 @@ export default function AmautaSurvey() {
                     <div className="flex justify-between text-xs sm:text-sm font-bold">
                       <span className="text-amauta-blue-dark flex items-center gap-1.5">
                         <Heart className="w-3.5 h-3.5 text-amauta-orange fill-amauta-orange" />
-                        <span>¡Me encanta! Definitivamente lo usaría</span>
+                        <span>{t('survey:statLove')}</span>
                       </span>
                       <span className="text-amauta-orange-dark font-mono font-black">{lovePct}%</span>
                     </div>
@@ -479,7 +459,7 @@ export default function AmautaSurvey() {
                     <div className="flex justify-between text-xs sm:text-sm font-bold">
                       <span className="text-amauta-blue-dark flex items-center gap-1.5">
                         <ThumbsUp className="w-3.5 h-3.5 text-amauta-blue fill-amauta-blue" />
-                        <span>Me interesa, deseamos probarlo gratis</span>
+                        <span>{t('survey:statInterest')}</span>
                       </span>
                       <span className="text-amauta-blue font-mono font-black">{interestPct}%</span>
                     </div>
@@ -498,7 +478,7 @@ export default function AmautaSurvey() {
                     <div className="flex justify-between text-xs sm:text-sm font-bold">
                       <span className="text-amauta-blue-dark flex items-center gap-1.5">
                         <span>😐</span>
-                        <span>Aún no estoy seguro, tengo mis dudas</span>
+                        <span>{t('survey:statUnsure')}</span>
                       </span>
                       <span className="text-foreground/40 font-mono font-black">{unsurePct}%</span>
                     </div>
@@ -519,7 +499,7 @@ export default function AmautaSurvey() {
                         const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
                         return (
                           <div key={key}>
-                            {FEATURE_EMOJIS[key]} El <span className="text-amauta-blue-dark font-black">{pct}%</span> destaca {label}.
+                            {FEATURE_EMOJIS[key]} {t('survey:featureHighlight', { pct, feature: label })}
                           </div>
                         );
                       })}
@@ -529,7 +509,7 @@ export default function AmautaSurvey() {
 
                 <div className="text-center pt-2">
                   <p className="text-xs text-foreground/50 italic leading-relaxed">
-                    ¿Te gustó la idea? Asegura su cupo de regalo ingresando los datos en la sección de matrícula que viene a continuación.
+                    {t('survey:closingNote')}
                   </p>
                 </div>
               </motion.div>

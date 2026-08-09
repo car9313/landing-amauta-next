@@ -1,0 +1,268 @@
+{
+  "common": {
+    "startFree": "Empieza gratis con tu hijo →",
+    "startFreeNow": "Empieza gratis ahora →",
+    "startFreeShort": "Empieza gratis",
+    "startNow": "Comenzar Gratis",
+    "noCreditCard": "Sin tarjeta de crédito · Acceso anticipado gratuito",
+    "mascotAlt": "Mascota Amauta - Cóndor Andino",
+    "logoAlt": "Amauta",
+    "toggleMenu": "Abrir o cerrar menú de navegación",
+    "skipToContent": "Saltar al contenido"
+  },
+  "navigation": {
+    "items": {
+      "inicio": "Inicio",
+      "problemas": "El problema",
+      "comoFunciona": "Cómo funciona",
+      "soluciones": "La solución",
+      "encuesta": "Encuesta",
+      "faq": "FAQ"
+    },
+    "selectLanguage": "Seleccionar idioma"
+  },
+  "hero": {
+    "badge": "Sabiduría que aprende contigo",
+    "titleLine1": "Tu hijo tiene su propio ritmo.",
+    "titleLine2": "Ya era hora de que su educación también.",
+    "subtitle": "Amauta se adapta a cada niño, funciona sin internet y hace que aprender sea lo mejor del día.",
+    "cta": "Empieza gratis con tu hijo →",
+    "note": "Sin tarjeta de crédito · Acceso anticipado gratuito",
+    "greeting": "¡Hola! Soy Amauta, ¿listo para aprender? 🦉",
+    "mascotAlt": "La mascota Amauta saludando y preparada para aprender"
+  },
+  "problems": {
+    "badge": "El problema",
+    "titleLine1": "Nadie lo dice en voz alta,",
+    "titleLine2": "pero todos lo sienten",
+    "description": "¿Te sientes identificado con alguna de estas situaciones diarias con tus hijos?",
+    "items": {
+      "deberes": {
+        "title": "“Hizo los deberes, pero ¿realmente lo entendió?”",
+        "pain": "No siempre sabes si tu hijo avanzó o solo copió las respuestas de forma mecánica para terminar rápido.",
+        "consequence": "Al final, las dudas acumuladas reaparecen en los exámenes, cuando ya es tarde para corregirlas."
+      },
+      "ritmo": {
+        "title": "“En clase van todos al mismo ritmo. Menos él.”",
+        "pain": "Cada niño tiene su propia velocidad. La educación tradicional no puede esperarlos o dar atención personalizada a todos.",
+        "consequence": "Esto causa que algunos se aburran esperando y otros se rindan por sentirse rezagados."
+      },
+      "wifi": {
+        "title": "“Las mejores apps dejan de funcionar sin wifi.”",
+        "pain": "Y justo cuando más las necesitas — en un trayecto, de viaje o en zonas con poca señal — se quedan en blanco.",
+        "consequence": "Un límite innecesario que interrumpe momentos valiosos de concentración o curiosidad."
+      }
+    },
+    "mascotAlt": "Mascota Amauta"
+  },
+  "howItWorks": {
+    "badge": "Sin jerga técnica compleja",
+    "title": "Cómo funciona Amauta",
+    "description": "Un ciclo natural donde el estudiante toma el timón de su propio avance y los adultos tienen visibilidad plena.",
+    "mechanism": "Mecanismo {{stepNumber}}",
+    "steps": {
+      "1": {
+        "title": "Tu hijo juega y practica",
+        "subtitle": "Ejercicios interactivos adaptados a su edad",
+        "description": "Nada de fichas aburridas — lecciones que parecen un juego interactivo pensado especialmente para captar su atención.",
+        "caption": "Modo juego",
+        "imageAlt": "La mascota de Amauta acompañando a un niño mientras practica con una tableta en un entorno divertido y educativo"
+      },
+      "2": {
+        "title": "Amauta aprende cómo aprende él",
+        "subtitle": "La app se calibra paso a paso de forma natural",
+        "description": "Cada respuesta le dice a Amauta qué sabe, qué le cuesta y qué necesita repasar. El siguiente ejercicio siempre es el adecuado.",
+        "caption": "Adaptación inteligente",
+        "imageAlt": "La mascota de Amauta analizando resultados con gráficos suaves, rutas de aprendizaje y una expresión pensativa"
+      },
+      "3": {
+        "title": "Tú ves su progreso real",
+        "subtitle": "Monitorea con total tranquilidad y cercanía",
+        "description": "No una nota. No un porcentaje genérico. Sabes exactamente en qué está avanzando y dónde necesita más práctica.",
+        "caption": "Progreso visible",
+        "imageAlt": "La mascota de Amauta mostrando un panel de progreso con gráficos ascendentes, medallas y estados de avance"
+      }
+    }
+  },
+  "solutions": {
+    "badge": "La solución",
+    "titleLine1": "Amauta no es otra app educativa.",
+    "titleLine2": "Es la que necesitabas.",
+    "description": "No creamos otro contenido genérico. Creamos la herramienta que faltaba para que tu hijo aprenda a su ritmo, sin depender del wifi.",
+    "items": {
+      "adaptive": {
+        "title": "Se adapta a su ritmo",
+        "description": "No todos aprenden igual. Amauta ajusta los ejercicios a lo que tu hijo sabe y necesita practicar, paso a paso."
+      },
+      "offline": {
+        "title": "Funciona sin internet",
+        "description": "La mayoría de apps se quedan en blanco sin wifi. Amauta funciona donde sea — en casa, en el coche, de viaje."
+      },
+      "progress": {
+        "title": "Ves su progreso real",
+        "description": "Nada de notas genéricas. Sabes exactamente qué domina y qué necesita reforzar, en tiempo real."
+      }
+    },
+    "earlyBadge": "Acceso anticipado",
+    "earlyTitle": "Sé de los primeros en usar Amauta",
+    "earlyDescription": "Las familias que entran ahora no solo usan la app — ayudan a construirla. Tu feedback decide qué se desarrolla primero, y mientras dure esta fase, todo es completamente gratuito. Sin compromisos, sin costos ocultos.",
+    "perks": {
+      "day1": {
+        "title": "Acceso total desde el día 1",
+        "subtitle": "Todas las funciones sin restricciones"
+      },
+      "voice": {
+        "title": "Tu opinión crea la app",
+        "subtitle": "Decides qué se construye primero"
+      },
+      "free": {
+        "title": "100% gratis mientras dure el early access",
+        "subtitle": "Sin tarjeta, sin compromisos"
+      }
+    },
+    "cta": "Empieza gratis ahora →",
+    "offlineBadge": "Siempre disponible. Pase lo que pase con el wifi.",
+    "offlineTitle": "La mayoría de apps educativas necesitan conexión para funcionar. Amauta no.",
+    "offlineText": "Una vez instalada en el dispositivo de tu hijo, funciona igual con wifi que sin él — en casa, en el coche, en el pueblo de los abuelos. Cuando vuelve la conexión, todo se sincroniza solo. Sin perder nada, sin que tu hijo tenga que hacer nada.",
+    "offlineQuote": "Porque el aprendizaje no debería depender del wifi."
+  },
+  "survey": {
+    "badge": "Encuesta de Comunidad",
+    "title": "¿Te interesa Amauta?",
+    "description": "Tu opinión es muy valiosa para construir la mejor ruta de aprendizaje integral. Completa esta encuesta rápida y mira lo que opina el resto de familias.",
+    "q1": "1. ¿Qué tanto te entusiasma Amauta para tus niños / alumnos?",
+    "required": "*",
+    "interestOptions": {
+      "high": {
+        "label": "¡Me encanta!",
+        "subtitle": "Lo usaría sin dudar"
+      },
+      "medium": {
+        "label": "Me interesa",
+        "subtitle": "Me gustaría probarlo"
+      },
+      "low": {
+        "label": "Aún no sé",
+        "subtitle": "Tengo ciertas dudas"
+      }
+    },
+    "q2": "2. ¿Qué característica es la que más te atrae?",
+    "features": {
+      "mascot": {
+        "title": "La mascota Amauta",
+        "desc": "Cóndor que guía y reacciona de forma lúdica"
+      },
+      "games": {
+        "title": "Mini Retos interactivos",
+        "desc": "Desafíos lúdicos basados en la cosmovisión andina"
+      },
+      "dashboard": {
+        "title": "Panel de Logros para padres",
+        "desc": "Monitoreo de habilidades mediante medallas reales"
+      },
+      "offline": {
+        "title": "Modo Offline Completo",
+        "desc": "Funciona seguro en viajes sin consumir tus datos"
+      }
+    },
+    "q3": "3. ¿Tienes algún aporte o comentario que deba saber el equipo? (Opcional)",
+    "q3Placeholder": "Escribe aquí tus ideas, inquietudes u observaciones...",
+    "q4": "¿Cómo te llamas? (Opcional)",
+    "q4Placeholder": "Ej. Papá de Sofía",
+    "submit": "Enviar mi Voto",
+    "submitting": "Enviando...",
+    "notifVoteOk": "¡Voto registrado correctamente!",
+    "notifSyncOk": "¡Tu voto se sincronizó correctamente!",
+    "notifPending": "Guardado localmente. Se sincronizará cuando haya conexión.",
+    "validationError": "Por favor selecciona tu nivel de interés y una característica favorita.",
+    "thanksTitle": "¡Tu opinión cuenta, gracias! 🧭🦉",
+    "thanksBody": "Ya contabilizamos tu respuesta. Mira los consolidados de las familias encuestadas.",
+    "statsHeading": "Estadísticas de la Comunidad — {{total}} familias encuestadas",
+    "statsEmpty": "Aún no hay suficientes datos. Los porcentajes aparecerán cuando más personas voten.",
+    "statLove": "¡Me encanta! Definitivamente lo usaría",
+    "statInterest": "Me interesa, deseamos probarlo gratis",
+    "statUnsure": "Aún no estoy seguro, tengo mis dudas",
+    "featureHighlight": "El {{pct}}% destaca {{feature}}",
+    "featureLabels": {
+      "prefMascot": "la compañía de la mascota Amauta",
+      "prefGames": "las mecánicas de juegos andinos interactivos",
+      "prefDashboard": "el panel de logros para padres",
+      "prefOffline": "el modo offline completo"
+    },
+    "featureEmojis": {
+      "prefMascot": "🦉",
+      "prefGames": "🎮",
+      "prefDashboard": "📈",
+      "prefOffline": "🎒"
+    },
+    "closingNote": "¿Te gustó la idea? Asegura su cupo de regalo ingresando los datos en la sección de matrícula que viene a continuación."
+  },
+  "faq": {
+    "badge": "Resuelve tus dudas",
+    "titleLine1": "¿Tienes preguntas?",
+    "titleLine2": "Aquí las respondemos",
+    "description": "Sabemos que probar algo nuevo genera dudas. Estas son las más comunes.",
+    "items": {
+      "edad": {
+        "question": "¿Para qué edad está pensado Amauta?",
+        "answer": "Recomendado para niños de 6 a 12 años (educación primaria). Los contenidos y retos están diseñados para ese rango, adaptándose al ritmo de cada niño."
+      },
+      "reemplazo": {
+        "question": "¿Amauta reemplaza a la escuela o al profesor?",
+        "answer": "No. Amauta es un complemento. Ayuda a reforzar lo aprendido en clase mediante retos divertidos, pero no sustituye la educación formal ni la guía de un docente."
+      },
+      "dispositivos": {
+        "question": "¿En qué dispositivos funciona?",
+        "answer": "En cualquier dispositivo con navegador web: computadoras, tablets y celulares. Además, al instalarse como app (PWA), funciona sin conexión a internet."
+      },
+      "supervision": {
+        "question": "¿Qué pasa si mi hijo lo usa sin supervisión?",
+        "answer": "La app está diseñada para que el niño juegue de forma autónoma. Tú recibes reportes de su progreso sin necesidad de estar al lado. No hay acceso a internet externo ni contenido generado por otros usuarios."
+      },
+      "privacidad": {
+        "question": "¿Mis datos y los de mi hijo están seguros?",
+        "answer": "Sí. No recopilamos, compartimos ni vendemos datos de menores. Todo el progreso se almacena localmente en el dispositivo. Puedes ver los detalles en nuestra Política de Privacidad."
+      },
+      "pago": {
+        "question": "¿Voy a tener que pagar después del acceso anticipado?",
+        "answer": "Durante el acceso anticipado todo es gratuito. Cuando definamos el modelo definitivo, te avisaremos con tiempo y tendrás beneficios por haber estado desde el inicio. No hay cargos sorpresa."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Sin compromisos. Sin tarjeta.",
+    "descriptionPrefix": "Mientras dure el acceso anticipado, todo es ",
+    "highlighted": "completamente gratuito",
+    "descriptionTail": ". Sin fecha de vencimiento oculta. Sin cargos sorpresa. Cuando definamos el modelo definitivo, quienes empezaron antes tendrán beneficios exclusivos.",
+    "badges": {
+      "creditCard": "✅ Sin tarjeta de crédito",
+      "fullAccess": "✅ Acceso completo desde el día 1",
+      "earlyAdopter": "✅ Beneficios de early adopter"
+    },
+    "imageAlt": "Tabla comparativa de planes Amauta"
+  },
+  "cta": {
+    "title": "Tu hijo puede empezar hoy.",
+    "description": "Sin esperas, sin tarjeta de crédito, sin complicaciones. Creas tu cuenta, añades a tu hijo y en dos minutos ya está aprendiendo a su ritmo.",
+    "cta": "Empieza gratis con tu hijo →",
+    "note": "Acceso anticipado abierto · Para niños de 3 a 9 años · Sin compromiso"
+  },
+  "footer": {
+    "tagline": "El aprendizaje que se adapta a tu hijo, siempre.",
+    "description": "Impulsando la igualdad de oportunidades pedagógicas y lúdicas que fomentan el crecimiento autónomo.",
+    "contactTitle": "Para familias con preguntas e interesados en el futuro de la educación:",
+    "legal": "Amauta by Axentra · Datos de menores protegidos conforme al RGPD",
+    "copyright": "© {{year}} Axentra S.A.C. Todos los derechos reservados.",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso",
+    "register": "Registrarse",
+    "privacyModalTitle": "Directrices de Privacidad",
+    "termsModalTitle": "Términos del Acceso Anticipado",
+    "securityBadge": "SEGURIDAD AXENTRA",
+    "privacy1": "1. <strong>Privacidad de Datos del Menor:</strong> No recopilamos, compartimos, ni comercializamos perfiles de estudiantes menores de edad bajo ninguna circunstancia. El nombre recopilado en el formulario es únicamente de carácter referencial e interno familiar.",
+    "privacy2": "2. <strong>Almacenamiento Local Seguro:</strong> Cualquier información de avance escolar queda almacenada localmente en tu propio dispositivo navegador, garantizando que tengas absoluto control físico de tus datos de actividad didáctica.",
+    "terms1": "1. <strong>Feedback del Acceso Anticipado:</strong> Entrar a esta fase de acceso anticipado te permite usar gratuitamente Amauta con el compromiso opcional de darnos feedback sincero para ayudarnos a mejorar.",
+    "terms2": "2. <strong>Uso Gratuito Asegurado:</strong> No se requiere ingresar tarjetas de crédito ni se generará ninguna obligación de cobro oculta tras completar los días gratuitos de prueba estipulados para familias.",
+    "close": "Cerrar"
+  }
+}

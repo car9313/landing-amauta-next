@@ -1,0 +1,11 @@
+{
+  "items": {
+    "inicio": "Inicio",
+    "problemas": "El problema",
+    "comoFunciona": "Cómo funciona",
+    "soluciones": "La solución",
+    "encuesta": "Encuesta",
+    "faq": "FAQ"
+  },
+  "selectLanguage": "Seleccionar idioma"
+}

@@ -1,0 +1,50 @@
+{
+  "badge": "Encuesta de Comunidad",
+  "title": "¿Te interesa Amauta?",
+  "description": "Tu opinión es muy valiosa para construir la mejor ruta de aprendizaje integral. Completa esta encuesta rápida y mira lo que opina el resto de familias.",
+  "q1": "1. ¿Qué tanto te entusiasma Amauta para tus niños / alumnos?",
+  "required": "*",
+  "interestOptions": {
+    "high": { "label": "¡Me encanta!", "subtitle": "Lo usaría sin dudar" },
+    "medium": { "label": "Me interesa", "subtitle": "Me gustaría probarlo" },
+    "low": { "label": "Aún no sé", "subtitle": "Tengo ciertas dudas" }
+  },
+  "q2": "2. ¿Qué característica es la que más te atrae?",
+  "features": {
+    "mascot": { "title": "La mascota Amauta", "desc": "Cóndor que guía y reacciona de forma lúdica" },
+    "games": { "title": "Mini Retos interactivos", "desc": "Desafíos lúdicos basados en la cosmovisión andina" },
+    "dashboard": { "title": "Panel de Logros para padres", "desc": "Monitoreo de habilidades mediante medallas reales" },
+    "offline": { "title": "Modo Offline Completo", "desc": "Funciona seguro en viajes sin consumir tus datos" }
+  },
+  "q3": "3. ¿Tienes algún aporte o comentario que deba saber el equipo? (Opcional)",
+  "q3Placeholder": "Escribe aquí tus ideas, inquietudes u observaciones...",
+  "q4": "¿Cómo te llamas? (Opcional)",
+  "q4Placeholder": "Ej. Papá de Sofía",
+  "submit": "Enviar mi Voto",
+  "submitting": "Enviando...",
+  "notifVoteOk": "¡Voto registrado correctamente!",
+  "notifSyncOk": "¡Tu voto se sincronizó correctamente!",
+  "notifPending": "Guardado localmente. Se sincronizará cuando haya conexión.",
+  "validationError": "Por favor selecciona tu nivel de interés y una característica favorita.",
+  "thanksTitle": "¡Tu opinión cuenta, gracias! 🧭🦉",
+  "thanksBody": "Ya contabilizamos tu respuesta. Mira los consolidados de las familias encuestadas.",
+  "statsHeading": "Estadísticas de la Comunidad — {{total}} familias encuestadas",
+  "statsEmpty": "Aún no hay suficientes datos. Los porcentajes aparecerán cuando más personas voten.",
+  "statLove": "¡Me encanta! Definitivamente lo usaría",
+  "statInterest": "Me interesa, deseamos probarlo gratis",
+  "statUnsure": "Aún no estoy seguro, tengo mis dudas",
+  "featureHighlight": "El {{pct}}% destaca {{feature}}",
+  "featureLabels": {
+    "prefMascot": "la compañía de la mascota Amauta",
+    "prefGames": "las mecánicas de juegos andinos interactivos",
+    "prefDashboard": "el panel de logros para padres",
+    "prefOffline": "el modo offline completo"
+  },
+  "featureEmojis": {
+    "prefMascot": "🦉",
+    "prefGames": "🎮",
+    "prefDashboard": "📈",
+    "prefOffline": "🎒"
+  },
+  "closingNote": "¿Te gustó la idea? Asegura su cupo de regalo ingresando los datos en la sección de matrícula que viene a continuación."
+}

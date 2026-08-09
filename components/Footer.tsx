@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { BookOpen, Sparkles, MapPin, Mail, ShieldAlert } from "lucide-react";
+import { BookOpen, Sparkles, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/locale/hooks/useLanguage";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { t } = useLanguage();
   const [activeModal, setActiveModal] = useState<"privacy" | "terms" | null>(
     null,
   );
@@ -39,15 +41,13 @@ export default function Footer() {
                   Amauta
                 </span>
                 <span className="text-[0.6rem] font-mono leading-none tracking-widest block font-extrabold uppercase text-amauta-orange-light">
-                  El aprendizaje que se adapta a tu hijo, siempre.
+                  {t('footer:tagline')}
                 </span>
               </div>
             </a>
 
             <p className="text-xs sm:text-sm text-slate-400 font-semibold leading-relaxed">
-              Amauta — El aprendizaje que se adapta a tu hijo, siempre.
-              Impulsando la igualdad de oportunidades pedagógicas y lúdicas que
-              fomentan el crecimiento autónomo.
+              {t('footer:tagline')} {t('footer:description')}
             </p>
           </div>
 
@@ -56,8 +56,7 @@ export default function Footer() {
           {/* Contact Details */}
           <div className="md:col-span-5 space-y-3.5 text-xs sm:text-sm text-slate-400 font-semibold">
             <div className="text-slate-300 font-black uppercase text-[10px] tracking-widest mb-1 text-center md:text-right">
-              Para familias con preguntas e interesados en el futuro de la
-              educación:
+              {t('footer:contactTitle')}
             </div>
 
             <div className="flex items-center gap-2 justify-center md:justify-end">
@@ -71,7 +70,7 @@ export default function Footer() {
             </div>
 
             <div className="text-[10px] text-slate-500 font-bold text-center md:text-right">
-              Amauta by Axentra · Datos de menores protegidos conforme al RGPD
+              {t('footer:legal')}
             </div>
           </div>
         </div>
@@ -79,7 +78,7 @@ export default function Footer() {
         {/* Minimal Copyright and legal links column */}
         <div className="pt-8 flex flex-col sm:flex-row gap-4 items-center justify-between text-xs font-semibold text-slate-500">
           <div>
-            &copy; {currentYear} Axentra S.A.C. Todos los derechos reservados.
+            {t('footer:copyright', { year: currentYear })}
           </div>
 
           <div className="flex gap-6">
@@ -87,13 +86,13 @@ export default function Footer() {
               onClick={() => setActiveModal("privacy")}
               className="hover:text-white transition-colors bg-transparent border-none p-0 cursor-pointer font-semibold text-xs"
             >
-              Política de privacidad
+              {t('footer:privacy')}
             </button>
             <button
               onClick={() => setActiveModal("terms")}
               className="hover:text-white transition-colors bg-transparent border-none p-0 cursor-pointer font-semibold text-xs"
             >
-              Términos de uso
+              {t('footer:terms')}
             </button>
             <button
               onClick={() => {
@@ -101,7 +100,7 @@ export default function Footer() {
               }}
               className="hover:text-white transition-colors bg-transparent border-none p-0 cursor-pointer font-semibold text-xs"
             >
-              Registrarse
+              {t('footer:register')}
             </button>
           </div>
         </div>
@@ -114,46 +113,24 @@ export default function Footer() {
             <div className="flex justify-between items-center border-b pb-3">
               <h4 className="text-base font-black text-slate-900 uppercase tracking-tight">
                 {activeModal === "privacy"
-                  ? "Directrices de Privacidad"
-                  : "Términos del Acceso Anticipado"}
+                  ? t('footer:privacyModalTitle')
+                  : t('footer:termsModalTitle')}
               </h4>
               <span className="text-[10px] font-mono uppercase text-amauta-orange font-bold">
-                SEGURIDAD AXENTRA
+                {t('footer:securityBadge')}
               </span>
             </div>
 
             <div className="text-xs text-slate-600 font-semibold space-y-3 leading-relaxed max-h-60 overflow-y-auto">
               {activeModal === "privacy" ? (
                 <>
-                  <p>
-                    1. <strong>Privacidad de Datos del Menor:</strong> No
-                    recopilamos, compartimos, ni comercializamos perfiles de
-                    estudiantes menores de edad bajo ninguna circunstancia. El
-                    nombre recopilado en el formulario es únicamente de carácter
-                    referencial e interno familiar.
-                  </p>
-                  <p>
-                    2. <strong>Almacenamiento Local Seguro:</strong> Cualquier
-                    información de avance escolar queda almacenada localmente en
-                    tu propio dispositivo navegador, garantizando que tengas
-                    absoluto control físico de tus datos de actividad didáctica
-                    de Amauta.
-                  </p>
+                  <p dangerouslySetInnerHTML={{ __html: t('footer:privacy1') }} />
+                  <p dangerouslySetInnerHTML={{ __html: t('footer:privacy2') }} />
                 </>
               ) : (
                 <>
-                  <p>
-                    1. <strong>Feedback del Acceso Anticipado:</strong> Entrar a
-                    esta fase de acceso anticipado te permite usar gratuitamente
-                    Amauta con el compromiso opcional de darnos feedback sincero
-                    para ayudarnos a mejorar.
-                  </p>
-                  <p>
-                    2. <strong>Uso Gratuito Asegurado:</strong> No se requiere
-                    ingresar tarjetas de crédito ni se generará ninguna
-                    obligación de cobro oculta tras completar los días gratuitos
-                    de prueba estipulados para familias.
-                  </p>
+                  <p dangerouslySetInnerHTML={{ __html: t('footer:terms1') }} />
+                  <p dangerouslySetInnerHTML={{ __html: t('footer:terms2') }} />
                 </>
               )}
             </div>
@@ -163,7 +140,7 @@ export default function Footer() {
                 onClick={() => setActiveModal(null)}
                 className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-5 py-2 rounded-xl text-xs uppercase"
               >
-                Cerrar
+                {t('footer:close')}
               </Button>
             </div>
           </div>

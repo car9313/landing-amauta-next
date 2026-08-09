@@ -4,6 +4,7 @@
 import { motion } from 'motion/react';
 import { Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import { useLanguage } from '@/lib/locale/hooks/useLanguage';
 
 interface HeroProps {
   onParentCTA: () => void;
@@ -12,6 +13,8 @@ interface HeroProps {
 export function Hero({
   onParentCTA,
 }: HeroProps) {
+  const { t } = useLanguage();
+
   return (
     <section
       id="inicio"
@@ -27,20 +30,19 @@ export function Hero({
         <div className="space-y-6 max-w-2xl flex flex-col items-center lg:items-start w-full lg:w-[55%]">
           <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-amauta-orange-light animate-pulse-ring">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Sabiduría que aprende contigo</span>
+            <span>{t('hero:badge')}</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black tracking-tight leading-tight uppercase font-sans">
-            Tu hijo tiene su propio ritmo.
+            {t('hero:titleLine1')}
             <br />
             <span className="text-amauta-orange-light">
-              Ya era hora de que su educación también.
+              {t('hero:titleLine2')}
             </span>
           </h1>
 
           <p className="text-lg sm:text-lg lg:text-xl font-bold text-slate-200 tracking-wide leading-relaxed">
-            Amauta se adapta a cada niño, funciona sin internet y hace que
-            aprender sea lo mejor del día.
+            {t('hero:subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center justify-center lg:justify-start pt-2">
@@ -48,12 +50,12 @@ export function Hero({
               onClick={onParentCTA}
               className="w-full sm:w-auto bg-amauta-orange text-amauta-surface font-black rounded-xl text-base px-8 py-4 shadow-lg hover:bg-amauta-orange-dark hover-lift hover-glow transition-all duration-200 cursor-pointer min-h-11 min-w-55 flex items-center justify-center gap-2 border-none"
             >
-              <span>Empieza gratis con tu hijo →</span>
+              <span>{t('hero:cta')}</span>
             </button>
           </div>
 
           <p className="text-xs font-bold text-slate-300 tracking-wider">
-            Sin tarjeta de crédito · Acceso anticipado gratuito
+            {t('hero:note')}
           </p>
 
 
@@ -69,7 +71,7 @@ export function Hero({
               }}
               className="bg-white/95 backdrop-blur-md text-amauta-blue-dark text-xs sm:text-sm font-black px-4 py-2 rounded-2xl shadow-lg mb-4 whitespace-nowrap relative"
             >
-              <span>¡Hola! Soy Amauta, ¿listo para aprender? 🦉</span>
+              <span>{t('hero:greeting')}</span>
               <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/95 rotate-45" />
             </motion.div>
 
@@ -82,7 +84,7 @@ export function Hero({
               <div className="absolute inset-0 bg-amauta-orange/30 blur-3xl rounded-full scale-75 -z-10" />
               <Image
                 src="/img/mascot-hero.webp"
-                alt="Mascota Amauta - Andean Condor"
+                alt={t('hero:mascotAlt')}
                 width={1627}
                 height={2400}
                 className="w-52 sm:w-64 md:w-80 lg:w-96 xl:w-104 h-auto select-none drop-shadow-2xl"

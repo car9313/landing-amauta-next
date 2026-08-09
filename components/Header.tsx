@@ -6,6 +6,8 @@ import { motion } from "motion/react";
 import { AmautaButton } from "./ui/amauta-button";
 import { cn } from "@/lib/utils";
 import { MobileMenu } from "./MobileMenu";
+import { useLanguage } from "@/lib/locale/hooks/useLanguage";
+import { LanguageSwitcher } from "./locale/LanguageSwitcher";
 
 interface HeaderProps {
   onStartClick: () => void;
@@ -13,15 +15,16 @@ interface HeaderProps {
 }
 
 const NAV_ITEMS = [
-  { label: "Inicio", id: "#inicio" },
-  { label: "El problema", id: "#problemas" },
-  { label: "Cómo funciona", id: "#como-funciona" },
-  { label: "La solución", id: "#soluciones" },
-  { label: "Encuesta", id: "#encuesta" },
-  { label: "FAQ", id: "#faq" },
+  { key: "inicio", id: "#inicio" },
+  { key: "problemas", id: "#problemas" },
+  { key: "comoFunciona", id: "#como-funciona" },
+  { key: "soluciones", id: "#soluciones" },
+  { key: "encuesta", id: "#encuesta" },
+  { key: "faq", id: "#faq" },
 ] as const;
 
 export default function Header({ onStartClick, activeSection }: HeaderProps) {
+  const { t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -98,7 +101,7 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
 
               return (
                 <a
-                  key={item.label}
+                  key={item.key}
                   href={item.id}
                   onClick={(e) => {
                     e.preventDefault();
@@ -114,7 +117,7 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
                         : "text-white/80 hover:text-white"
                   }`}
                 >
-                  {item.label}
+                  {t(`navigation:items.${item.key}`)}
                   {active && (
                     <motion.div
                       layoutId="activeIndicator"
@@ -137,9 +140,11 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
                 isScrolled ? "" : "shadow-[0_4px_14px_rgba(255,255,255,0.3)] hover:shadow-lg",
               )}
             >
-              Comenzar Gratis
+              {t('common:startNow')}
             </AmautaButton>
           </div>
+
+          <LanguageSwitcher className="hidden lg:inline-flex text-amauta-blue" />
 
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
@@ -148,7 +153,7 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
                 ? "hover:bg-amauta-blue-light/50 text-amauta-blue"
                 : "hover:bg-white/10 text-white"
             }`}
-            aria-label="Toggle navigation menu"
+            aria-label={t('common:toggleMenu')}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
           >

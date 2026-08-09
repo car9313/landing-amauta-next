@@ -2,39 +2,26 @@
 
 import { motion } from 'motion/react';
 import Image from 'next/image';
-import { Flame, WifiOff, Zap, Target, BarChart3 } from 'lucide-react';
+import { Flame, WifiOff, Target } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { SectionHeader } from '@/components/ui/section-header';
+import { useLanguage } from '@/lib/locale/hooks/useLanguage';
 
-const SOLUTIONS = [
-  {
-    icon: Zap,
-    image: '/img/solution-adaptive.webp',
-    title: 'Se adapta a su ritmo',
-    description:
-      'No todos aprenden igual. Amauta ajusta los ejercicios a lo que tu hijo sabe y necesita practicar, paso a paso.',
-  },
-  {
-    icon: WifiOff,
-    image: '/img/solution-offline.webp',
-    title: 'Funciona sin internet',
-    description:
-      'La mayoría de apps se quedan en blanco sin wifi. Amauta funciona donde sea — en casa, en el coche, de viaje.',
-  },
-  {
-    icon: BarChart3,
-    image: '/img/solution-progress.webp',
-    title: 'Ves su progreso real',
-    description:
-      'Nada de notas genéricas. Sabes exactamente qué domina y qué necesita reforzar, en tiempo real.',
-  },
-];
+const SOLUTION_IDS = ['adaptive', 'offline', 'progress'] as const;
+
+const SOLUTION_DATA: Record<(typeof SOLUTION_IDS)[number], { image: string; iconClass: string }> = {
+  adaptive: { image: '/img/solution-adaptive.webp', iconClass: 'text-amauta-blue' },
+  offline: { image: '/img/solution-offline.webp', iconClass: 'text-amauta-orange' },
+  progress: { image: '/img/solution-progress.webp', iconClass: 'text-emerald-600' },
+};
 
 interface SolutionsProps {
   onStartClick?: () => void;
 }
 
 export default function Solutions({ onStartClick }: SolutionsProps) {
+  const { t } = useLanguage();
+
   return (
     <section
       id="soluciones"
@@ -46,9 +33,9 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeader
-          badge={{ icon: Target, text: "La solución" }}
-          title={<>Amauta no es otra app educativa.<br /><span className="text-amauta-orange">Es la que necesitabas.</span></>}
-          description="No creamos otro contenido genérico. Creamos la herramienta que faltaba para que tu hijo aprenda a su ritmo, sin depender del wifi."
+          badge={{ icon: Target, text: t('solutions:badge') }}
+          title={<>{t('solutions:titleLine1')}<br /><span className="text-amauta-orange">{t('solutions:titleLine2')}</span></>}
+          description={t('solutions:description')}
         />
 
         {/* 3 Solution Cards */}
@@ -62,9 +49,9 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
           }}
           className="mb-24 grid grid-cols-1 gap-6 sm:grid-cols-3 lg:gap-8"
         >
-          {SOLUTIONS.map((solution) => (
+          {SOLUTION_IDS.map((id) => (
             <motion.div
-              key={solution.title}
+              key={id}
               variants={{
                 hidden: { opacity: 0, y: 30, scale: 0.98 },
                 show: {
@@ -98,8 +85,8 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
                         className="h-full w-full"
                       >
                         <Image
-                          src={solution.image}
-                          alt={solution.title}
+                          src={SOLUTION_DATA[id].image}
+                          alt={t(`solutions:items.${id}.title`)}
                           width={288}
                           height={288}
                           className="h-full w-full select-none object-contain drop-shadow-[0_18px_24px_rgba(15,23,42,0.16)]"
@@ -110,11 +97,11 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
                   </div>
 
                   <h3 className="mb-3 text-lg font-black tracking-tight text-amauta-blue-dark sm:text-xl">
-                    {solution.title}
+                    {t(`solutions:items.${id}.title`)}
                   </h3>
 
                   <p className="text-sm font-medium leading-relaxed text-slate-600">
-                    {solution.description}
+                    {t(`solutions:items.${id}.description`)}
                   </p>
                 </div>
               </Card>
@@ -133,18 +120,15 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
           >
             <span className="inline-flex items-center gap-1.5 rounded-full border border-amauta-orange-light/25 bg-amauta-orange-light/25 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-amauta-orange-dark">
               <Flame className="h-3.5 w-3.5 animate-pulse" />
-              <span>Acceso anticipado</span>
+              <span>{t('solutions:earlyBadge')}</span>
             </span>
 
             <h2 className="text-3xl font-black leading-tight text-amauta-blue-dark sm:text-4xl">
-              Sé de los primeros en usar Amauta
+              {t('solutions:earlyTitle')}
             </h2>
 
             <p className="text-base font-semibold leading-relaxed text-slate-700 sm:text-lg">
-              Las familias que entran ahora no solo usan la app — ayudan a
-              construirla. Tu feedback decide qué se desarrolla primero, y
-              mientras dure esta fase, todo es completamente gratuito. Sin
-              compromisos, sin costos ocultos.
+              {t('solutions:earlyDescription')}
             </p>
 
             <div className="mx-auto max-w-lg space-y-2 pt-4">
@@ -152,10 +136,10 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
                 <span className="text-xl select-none">🎯</span>
                 <div>
                   <span className="block text-sm font-black text-amauta-blue-dark">
-                    Acceso total desde el día 1
+                    {t('solutions:perks.day1.title')}
                   </span>
                   <span className="text-xs font-semibold text-slate-500">
-                    Todas las funciones sin restricciones
+                    {t('solutions:perks.day1.subtitle')}
                   </span>
                 </div>
               </div>
@@ -164,10 +148,10 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
                 <span className="text-xl select-none">💬</span>
                 <div>
                   <span className="block text-sm font-black text-amauta-blue-dark">
-                    Tu opinión crea la app
+                    {t('solutions:perks.voice.title')}
                   </span>
                   <span className="text-xs font-semibold text-slate-500">
-                    Decides qué se construye primero
+                    {t('solutions:perks.voice.subtitle')}
                   </span>
                 </div>
               </div>
@@ -176,10 +160,10 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
                 <span className="text-xl select-none">🎁</span>
                 <div>
                   <span className="block text-sm font-black text-amauta-blue-dark">
-                    100% gratis mientras dure el early access
+                    {t('solutions:perks.free.title')}
                   </span>
                   <span className="text-xs font-semibold text-slate-500">
-                    Sin tarjeta, sin compromisos
+                    {t('solutions:perks.free.subtitle')}
                   </span>
                 </div>
               </div>
@@ -190,7 +174,7 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
                 onClick={onStartClick}
                 className="bg-amauta-orange text-amauta-surface font-black rounded-xl text-base px-8 py-4 shadow-lg hover:bg-amauta-orange-dark hover-lift hover-glow transition-all duration-200 cursor-pointer min-h-11 min-w-55 flex items-center justify-center gap-2 border-none mx-auto"
               >
-                <span>Empieza gratis ahora →</span>
+                <span>{t('solutions:cta')}</span>
               </button>
             </div>
           </motion.div>
@@ -209,22 +193,18 @@ export default function Solutions({ onStartClick }: SolutionsProps) {
 
             <div className="space-y-4 text-center md:col-span-10 md:text-left">
               <span className="block text-[10.5px] font-black uppercase tracking-widest text-amauta-orange-light">
-                Siempre disponible. Pase lo que pase con el wifi.
+                {t('solutions:offlineBadge')}
               </span>
               <h3 className="text-2xl font-black uppercase tracking-tight leading-tight font-sans sm:text-3xl">
-                La mayoría de apps educativas necesitan conexión para funcionar.
-                Amauta no.
+                {t('solutions:offlineTitle')}
               </h3>
               <p className="max-w-3xl text-sm font-semibold leading-relaxed text-white/90 sm:text-base">
-                Una vez instalada en el dispositivo de tu hijo, funciona igual con
-                wifi que sin él — en casa, en el coche, en el pueblo de los
-                abuelos. Cuando vuelve la conexión, todo se sincroniza solo. Sin
-                perder nada, sin que tu hijo tenga que hacer nada.
+                {t('solutions:offlineText')}
               </p>
 
               <div className="mt-4 border-t border-white/10 pt-2">
                 <blockquote className="text-base font-black italic text-amauta-orange-light sm:text-lg">
-                  &ldquo;Porque el aprendizaje no debería depender del wifi.&rdquo;
+                  &ldquo;{t('solutions:offlineQuote')}&rdquo;
                 </blockquote>
               </div>
             </div>

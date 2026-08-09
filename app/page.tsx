@@ -2,7 +2,6 @@
 
 import Header from '@/components/Header';
 import { Hero } from '@/components/Hero';
-import { useMascotPage } from './hooks/useMascotPage';
 import { useScrollSpy } from './hooks/useScrollSpy';
 import Problems from '@/components/Problems';
 import HowItWorks from '@/components/HowItWorks';
@@ -12,6 +11,9 @@ import FAQ from '@/components/FAQ';
 import PricingCallout from '@/components/PricingCallout';
 import CTASection from '@/components/CTASection';
 import Footer from '@/components/Footer';
+
+const REGISTER_URL =
+  process.env.NEXT_PUBLIC_REGISTER_URL || '/register';
 
 const SECTION_IDS = [
   "inicio",
@@ -23,11 +25,10 @@ const SECTION_IDS = [
 ] as const;
 
 export default function Home() {
-  const {
-    handleParentCTA,
-  } = useMascotPage();
-
   const activeSection = useScrollSpy([...SECTION_IDS]);
+
+  const handleParentCTA = () =>
+    window.open(REGISTER_URL, '_blank', 'noopener,noreferrer');
 
   return (
     <div className="relative min-h-screen bg-background overflow-x-hidden select-none">
