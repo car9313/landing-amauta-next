@@ -5,20 +5,22 @@
   "description": "Do you relate to any of these everyday situations with your kids?",
   "items": {
     "deberes": {
-      "title": "\u201cHe did his homework, but did he really understand it?\u201d",
-      "pain": "You don't always know if your child moved forward or just copied the answers mechanically to finish quickly.",
-      "consequence": "In the end, piled-up doubts come back on exams, when it's already too late to fix them."
+      "label": "Frustration",
+      "title": "\"Did they really understand it, or just copy the answers?\"",
+      "pain": "You don't always know if your child actually moved forward or solved homework mechanically just to finish fast.",
+      "consequence": "Accumulated doubts resurface on exams, when it's already too late to fix them."
     },
     "ritmo": {
-      "title": "\u201cIn class everyone goes at the same pace. Except him.\u201d",
+      "label": "Their own pace",
+      "title": "\"In class everyone goes at the same pace. Except him.\"",
       "pain": "Every child has their own speed. Traditional education can't wait for them or give personalized attention to everyone.",
-      "consequence": "This makes some kids get bored waiting and others give up for feeling left behind."
+      "consequence": "Some kids get bored waiting while others give up for feeling left behind."
     },
     "wifi": {
-      "title": "\u201cThe best apps stop working without wifi.\u201d",
-      "pain": "And exactly when you need them most — on the road, traveling or in low-signal areas — they go blank.",
+      "label": "No connection",
+      "title": "\"The best apps stop working without wifi.\"",
+      "pain": "And just when you need them most — on the go, traveling or in low-signal areas — they go blank.",
       "consequence": "An unnecessary limit that interrupts valuable moments of focus or curiosity."
     }
-  },
-  "mascotAlt": "Amauta mascot"
+  }
 }

@@ -39,6 +39,16 @@
   --color-amauta-warm-white: var(--amauta-warm-white);
   --color-amauta-surface: var(--amauta-surface);
   --color-amauta-surface-alt: var(--amauta-surface-alt);
+  --color-amauta-slate-50: var(--amauta-slate-50);
+  --color-amauta-slate-100: var(--amauta-slate-100);
+  --color-amauta-slate-200: var(--amauta-slate-200);
+  --color-amauta-slate-300: var(--amauta-slate-300);
+  --color-amauta-slate-400: var(--amauta-slate-400);
+  --color-amauta-slate-500: var(--amauta-slate-500);
+  --color-amauta-slate-600: var(--amauta-slate-600);
+  --color-amauta-slate-700: var(--amauta-slate-700);
+  --color-amauta-slate-800: var(--amauta-slate-800);
+  --color-amauta-slate-900: var(--amauta-slate-900);
 
   --color-success: var(--success);
   --color-warning: var(--warning);
@@ -157,6 +167,16 @@
   --amauta-warm-white: #f6f3ee;
   --amauta-surface: #ffffff;
   --amauta-surface-alt: #f8f9fc;
+  --amauta-slate-50: #f8fafc;
+  --amauta-slate-100: #f1f5f9;
+  --amauta-slate-200: #e2e8f0;
+  --amauta-slate-300: #cbd5e1;
+  --amauta-slate-400: #94a3b8;
+  --amauta-slate-500: #64748b;
+  --amauta-slate-600: #475569;
+  --amauta-slate-700: #334155;
+  --amauta-slate-800: #1e293b;
+  --amauta-slate-900: #0f172a;
 
   /* Status */
   --success: #10b981;

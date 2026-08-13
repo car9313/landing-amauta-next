@@ -1,10 +1,17 @@
 {
   "badge": "Sabiduría que aprende contigo",
-  "titleLine1": "Tu hijo tiene su propio ritmo.",
-  "titleLine2": "Ya era hora de que su educación también.",
-  "subtitle": "Amauta se adapta a cada niño, funciona sin internet y hace que aprender sea lo mejor del día.",
-  "cta": "Empieza gratis con tu hijo →",
+  "titleLine1": "Cuando tu hijo dice",
+  "titleHighlight": "no entiendo,",
+  "titleLine2": "Amauta entiende cómo ayudar.",
+  "subtitle": "Aprendizaje adaptativo que identifica necesidades y guía cada paso — para que aprender en casa deje de ser una pelea.",
+  "cta": "Probar demo →",
+  "ctaSecondary": "Ver cómo funciona",
   "note": "Sin tarjeta de crédito · Acceso anticipado gratuito",
-  "greeting": "¡Hola! Soy Amauta, ¿listo para aprender? 🦉",
-  "mascotAlt": "La mascota Amauta saludando y preparada para aprender"
+  "heroImageAlt": "Madre e hijo aprendiendo con Amauta",
+  "pillars": [
+    "Entiende lo que necesita tu hijo",
+    "Guía paso a paso con ejemplos",
+    "Contenido adaptado a su nivel",
+    "Confianza que se nota"
+  ]
 }

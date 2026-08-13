@@ -49,6 +49,21 @@ cambió respecto a lo almacenado.
 | Cookie `es-MX`, GeoIP PE (difiere) | reescribe cookie a `es-PE` → traduce |
 | Cookie `es-MX`, GeoIP MX (coincide) | **no reescribe nada** (sin Set-Cookie) |
 | `?locale=en` | `en` siempre, independiente de la cookie |
+| País no mapeado (p. ej. CU, con navegador en inglés) | geo falla → `navigator.language` → `en` + **cookie `en`** |
+
+### País NO mapeado (caso pendiente de decisión)
+
+Cuando el país no está en `LOCALE_MAP` (p. ej. Cuba `CU`, Venezuela `VE`,
+Ecuador `EC`, Uruguay `UY`…) **la geo devuelve fallo (`unmapped_country`)** y el
+fallback usa `navigator.language`:
+
+- Navegador en español → `es-LA` (correcto, idioma neutro).
+- Navegador en inglés → `en` + **cookie `en` persistida** (la persona se queda en
+  inglés aunque su país sea hispanohablante).
+
+> ⚠️ Decisión abierta: añadir los países hispanohablantes a `LOCALE_MAP` como
+> `CU: "es-LA"`, `ES: "es-LA"`, `VE: "es-LA"` … para que la geo los lleve a
+> `es-LA` aunque el navegador sea inglés (sin coste: `es-LA` está embebido).
 
 **Verificación con curl** (simula el header del hosting):
 

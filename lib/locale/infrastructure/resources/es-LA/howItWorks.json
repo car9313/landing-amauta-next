@@ -1,29 +1,29 @@
 {
   "badge": "Sin jerga técnica compleja",
-  "title": "Cómo funciona Amauta",
-  "description": "Un ciclo natural donde el estudiante toma el timón de su propio avance y los adultos tienen visibilidad plena.",
-  "mechanism": "Mecanismo {{stepNumber}}",
+  "titleLine1": "Tres pasos, una misma idea:",
+  "titleLine2": "que el niño entienda de verdad.",
+  "description": "Una experiencia simple: Amauta detecta, explica y muestra el avance — para que aprender en casa deje de ser una pelea.",
+  "speechBubble1": "\"Cada paso cuenta.",
+  "speechBubble2": "Cada niño importa.\"",
+  "mascotAlt": "Amauta mostrando cómo funciona la app",
   "steps": {
     "1": {
-      "title": "Tu hijo juega y practica",
-      "subtitle": "Ejercicios interactivos adaptados a su edad",
-      "description": "Nada de fichas aburridas — lecciones que parecen un juego interactivo pensado especialmente para captar su atención.",
-      "caption": "Modo juego",
-      "imageAlt": "La mascota de Amauta acompañando a un niño mientras practica con una tableta en un entorno divertido y educativo"
+      "label": "Diagnóstico",
+      "title": "Detecta exactamente dónde está",
+      "description": "Una actividad corta y amigable determina el punto de partida real: qué domina, qué le cuesta y por dónde empezar — sin pruebas estresantes.",
+      "pill": "Diagnóstico en minutos"
     },
     "2": {
-      "title": "Amauta aprende cómo aprende él",
-      "subtitle": "La app se calibra paso a paso de forma natural",
-      "description": "Cada respuesta le dice a Amauta qué sabe, qué le cuesta y qué necesita repasar. El siguiente ejercicio siempre es el adecuado.",
-      "caption": "Adaptación inteligente",
-      "imageAlt": "La mascota de Amauta analizando resultados con gráficos suaves, rutas de aprendizaje y una expresión pensativa"
+      "label": "Práctica guiada",
+      "title": "Explica, acompaña y ajusta",
+      "description": "Amauta explica con ejemplos, acompaña cada intento y ajusta la dificultad para que el niño nunca se quede atascado.",
+      "pill": "Adapta en tiempo real"
     },
     "3": {
-      "title": "Tú ves su progreso real",
-      "subtitle": "Monitorea con total tranquilidad y cercanía",
-      "description": "No una nota. No un porcentaje genérico. Sabes exactamente en qué está avanzando y dónde necesita más práctica.",
-      "caption": "Progreso visible",
-      "imageAlt": "La mascota de Amauta mostrando un panel de progreso con gráficos ascendentes, medallas y estados de avance"
+      "label": "Avance que se ve",
+      "title": "Tú sabes cómo va, sin ser experto",
+      "description": "Retroalimentación inmediata para el niño y un reporte claro para casa: qué mejoró y cómo seguir esta semana.",
+      "pill": "Reporte familiar claro"
     }
   }
 }

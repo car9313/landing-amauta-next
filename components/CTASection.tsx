@@ -1,6 +1,7 @@
 'use client';
 
 import { Award } from 'lucide-react';
+import Image from 'next/image';
 import { useLanguage } from '@/lib/locale/hooks/useLanguage';
 
 interface CTASectionProps {
@@ -13,7 +14,7 @@ export default function CTASection({ onParentCTA }: CTASectionProps) {
   return (
     <section
       id="empieza-ahora"
-      className="relative py-20 sm:py-24 bg-linear-to-tr from-amauta-blue via-amauta-blue-dark to-amauta-orange text-white text-center overflow-hidden"
+      className="relative py-10 sm:py-5 bg-linear-to-tr from-amauta-blue via-amauta-blue-dark to-amauta-orange text-white text-center overflow-hidden"
     >
       <div className="noise-overlay" />
       <div className="absolute top-1/2 left-1/4 w-72 h-72 bg-white/5 blur-3xl rounded-full animate-float-gentle pointer-events-none" />
@@ -24,11 +25,11 @@ export default function CTASection({ onParentCTA }: CTASectionProps) {
           <Award className="w-6 h-6 animate-pulse" />
         </div>
 
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight uppercase font-sans">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight font-sans">
           {t('cta:title')}
         </h2>
 
-        <p className="text-base sm:text-lg text-slate-100 font-extrabold max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg text-amauta-slate-100 font-extrabold max-w-2xl mx-auto">
           {t('cta:description')}
         </p>
 
@@ -39,11 +40,19 @@ export default function CTASection({ onParentCTA }: CTASectionProps) {
           >
             <span>{t('cta:cta')}</span>
           </button>
-          <p className="text-xs font-semibold text-slate-300">
+          <p className="text-xs font-semibold text-amauta-slate-300">
             {t('cta:note')}
           </p>
         </div>
       </div>
+
+      <Image
+        src="/img/cta.webp"
+        alt={t('cta:imageAlt')}
+        width={1200}
+        height={675}
+        className="mx-auto mt-12 h-auto w-36 sm:w-40 md:w-48"
+      />
     </section>
   );
 }

@@ -1,32 +1,31 @@
-
 export interface ProblemItem {
   id: string;
-  title: string;
-  pain: string;
-  consequence: string;
+  labelColor: string;
   imgSrc: string;
+  accentBorder: string;
+  bulletColor: string;
 }
 
 export const problems: ProblemItem[] = [
   {
     id: 'deberes',
-    title: '“Hizo los deberes, pero ¿realmente lo entendió?”',
-    pain: 'No siempre sabes si tu hijo avanzó o solo copió las respuestas de forma mecánica para terminar rápido.',
-    consequence: 'Al final, las dudas acumuladas reaparecen en los exámenes, cuando ya es tarde para corregirlas.',
+    labelColor: 'text-rose-600',
     imgSrc: '/img/img1.webp',
+    accentBorder: 'border-t-rose-400',
+    bulletColor: 'text-rose-400',
   },
   {
     id: 'ritmo',
-    title: '“En clase van todos al mismo ritmo. Menos él.”',
-    pain: 'Cada niño tiene su propia velocidad. La educación tradicional no puede esperarlos o dar atención personalizada a todos.',
-    consequence: 'Esto causa que algunos se aburran esperando y otros se rindan por sentirse rezagados.',
+    labelColor: 'text-amber-600',
     imgSrc: '/img/img2.webp',
+    accentBorder: 'border-t-amber-400',
+    bulletColor: 'text-amber-400',
   },
   {
     id: 'wifi',
-    title: '“Las mejores apps dejan de funcionar sin wifi.”',
-    pain: 'Y justo cuando más las necesitas — en un trayecto, de viaje o en zonas con poca señal — se quedan en blanco.',
-    consequence: 'Un límite innecesario que interrumpe momentos valiosos de concentración o curiosidad.',
+    labelColor: 'text-amauta-blue',
     imgSrc: '/img/img3.webp',
+    accentBorder: 'border-t-amauta-blue-light',
+    bulletColor: 'text-amauta-blue',
   },
 ];

@@ -26,7 +26,6 @@ interface MobileMenuProps {
 export function MobileMenu({
   open,
   activeSection,
-  isScrolled,
   onClose,
   onStartClick,
   onNavigate,

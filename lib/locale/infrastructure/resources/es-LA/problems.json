@@ -5,20 +5,22 @@
   "description": "¿Te sientes identificado con alguna de estas situaciones diarias con tus hijos?",
   "items": {
     "deberes": {
-      "title": "“Hizo los deberes, pero ¿realmente lo entendió?”",
-      "pain": "No siempre sabes si tu hijo avanzó o solo copió las respuestas de forma mecánica para terminar rápido.",
-      "consequence": "Al final, las dudas acumuladas reaparecen en los exámenes, cuando ya es tarde para corregirlas."
+      "label": "Frustración",
+      "title": "\"¿Lo entendió o solo copió las respuestas?\"",
+      "pain": "No siempre sabes si tu hijo avanzó o resolvió los deberes de forma mecánica para terminar rápido.",
+      "consequence": "Las dudas acumuladas reaparecen en los exámenes, cuando ya es tarde para corregirlas."
     },
     "ritmo": {
-      "title": "“En clase van todos al mismo ritmo. Menos él.”",
+      "label": "Ritmo propio",
+      "title": "\"En clase van todos al mismo ritmo. Menos él.\"",
       "pain": "Cada niño tiene su propia velocidad. La educación tradicional no puede esperarlos o dar atención personalizada a todos.",
-      "consequence": "Esto causa que algunos se aburran esperando y otros se rindan por sentirse rezagados."
+      "consequence": "Algunos se aburren esperando y otros se rindan por sentirse rezagados."
     },
     "wifi": {
-      "title": "“Las mejores apps dejan de funcionar sin wifi.”",
+      "label": "Sin conexión",
+      "title": "\"Las mejores apps dejan de funcionar sin wifi.\"",
       "pain": "Y justo cuando más las necesitas — en un trayecto, de viaje o en zonas con poca señal — se quedan en blanco.",
       "consequence": "Un límite innecesario que interrumpe momentos valiosos de concentración o curiosidad."
     }
-  },
-  "mascotAlt": "Mascota Amauta"
+  }
 }

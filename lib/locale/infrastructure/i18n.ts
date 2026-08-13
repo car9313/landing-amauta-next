@@ -82,6 +82,10 @@ export function initI18n() {
   });
 }
 
+// Inicializa i18next al cargar el módulo para que SSR y el primer render
+// del cliente dispongan de una instancia lista (evita NO_I18NEXT_INSTANCE).
+initI18n();
+
 /**
  * Descarga el bundle regional correspondiente y lo registra en i18next.
  * Con `fallbackLng: es-LA`, cualquier key faltante del regional cae al neutro.

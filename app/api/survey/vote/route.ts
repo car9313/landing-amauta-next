@@ -64,7 +64,10 @@ export async function POST(req: Request) {
 
     return Response.json({ success: true })
   } catch (error) {
-    console.error('❌ Redis vote error:', error)
-    return Response.json({ error: 'Failed to register vote' }, { status: 500 })
+    console.error('❌ Redis vote error (network/service unavailable):', error)
+    return new Response(
+      JSON.stringify({ error: 'Vote service temporarily unavailable' }),
+      { status: 503, headers: { 'Content-Type': 'application/json' } }
+    )
   }
 }

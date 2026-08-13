@@ -8,7 +8,6 @@ import HowItWorks from '@/components/HowItWorks';
 import Solutions from '@/components/Solutions';
 import AmautaSurvey from '@/components/AmautaSurvey';
 import FAQ from '@/components/FAQ';
-import PricingCallout from '@/components/PricingCallout';
 import CTASection from '@/components/CTASection';
 import Footer from '@/components/Footer';
 
@@ -33,13 +32,13 @@ export default function Home() {
   return (
     <div className="relative min-h-screen bg-background overflow-x-hidden select-none">
       <Header onStartClick={handleParentCTA} activeSection={activeSection} />
-      <Hero onParentCTA={handleParentCTA} />
+      <Hero  onParentCTA={handleParentCTA} />
       <Problems />
       <HowItWorks />
       <Solutions onStartClick={handleParentCTA} />
       <AmautaSurvey />
       <FAQ />
-      <PricingCallout />
+     {/*  <PricingCallout /> */}
       <CTASection onParentCTA={handleParentCTA} />
       <Footer />
     </div>

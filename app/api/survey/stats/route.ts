@@ -17,7 +17,10 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.error('❌ Redis stats error:', error)
-    return Response.json({ error: 'Failed to fetch stats' }, { status: 500 })
+    console.error('❌ Redis stats error (network/service unavailable):', error)
+    return new Response(
+      JSON.stringify({ error: 'Stats service temporarily unavailable' }),
+      { status: 503, headers: { 'Content-Type': 'application/json' } }
+    )
   }
 }

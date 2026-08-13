@@ -2,30 +2,39 @@
   "badge": "La solución",
   "titleLine1": "Amauta no es otra app educativa.",
   "titleLine2": "Es la que necesitabas.",
-  "description": "No creamos otro contenido genérico. Creamos la herramienta que faltaba para que tu hijo aprenda a su ritmo, sin depender del wifi.",
-  "items": {
-    "adaptive": {
-      "title": "Se adapta a su ritmo",
-      "description": "No todos aprenden igual. Amauta ajusta los ejercicios a lo que tu hijo sabe y necesita practicar, paso a paso."
+  "description": "Todo conectado: lo que el niño practica alimenta el reporte de casa y el panel de la escuela.",
+  "modules": {
+    "diagnostico": {
+      "title": "Diagnóstico adaptativo",
+      "description": "Evalúa habilidades y conocimientos para determinar el punto de partida.",
+      "tag": "Punto de partida en minutos"
     },
-    "offline": {
-      "title": "Funciona sin internet",
-      "description": "La mayoría de apps se quedan en blanco sin wifi. Amauta funciona donde sea — en casa, en el coche, de viaje."
+    "practica": {
+      "title": "Práctica guiada",
+      "description": "Actividades interactivas con ejemplos y apoyo paso a paso.",
+      "tag": "Apoyo paso a paso"
     },
-    "progress": {
-      "title": "Ves su progreso real",
-      "description": "Nada de notas genéricas. Sabes exactamente qué domina y qué necesita reforzar, en tiempo real."
+    "evaluacion": {
+      "title": "Evaluación inteligente",
+      "description": "Retroalimentación inmediata y ajustes según el progreso del niño.",
+      "tag": "Retroalimentación inmediata"
+    },
+    "reporte": {
+      "title": "Reporte familiar",
+      "description": "Reportes claros con recomendaciones para acompañar en casa.",
+      "tag": "Para acompañar en casa"
+    },
+    "escuela": {
+      "title": "Panel escuela",
+      "description": "Visión global del aula y seguimiento del aprendizaje por estudiante.",
+      "tag": "Seguimiento por estudiante"
     }
   },
-  "earlyBadge": "Acceso anticipado",
-  "earlyTitle": "Sé de los primeros en usar Amauta",
-  "earlyDescription": "Las familias que entran ahora no solo usan la app — ayudan a construirla. Tu feedback decide qué se desarrolla primero, y mientras dure esta fase, todo es completamente gratuito. Sin compromisos, sin costos ocultos.",
-  "perks": {
-    "day1": { "title": "Acceso total desde el día 1", "subtitle": "Todas las funciones sin restricciones" },
-    "voice": { "title": "Tu opinión crea la app", "subtitle": "Decides qué se construye primero" },
-    "free": { "title": "100% gratis mientras dure el early access", "subtitle": "Sin tarjeta, sin compromisos" }
+  "darkCard": {
+    "badge": "Prueba real",
+    "text": "La práctica diaria construye confianza.",
+    "cta": "Probar demo"
   },
-  "cta": "Empieza gratis ahora →",
   "offlineBadge": "Siempre disponible. Pase lo que pase con el wifi.",
   "offlineTitle": "La mayoría de apps educativas necesitan conexión para funcionar. Amauta no.",
   "offlineText": "Una vez instalada en el dispositivo de tu hijo, funciona igual con wifi que sin él — en casa, en el coche, en el pueblo de los abuelos. Cuando vuelve la conexión, todo se sincroniza solo. Sin perder nada, sin que tu hijo tenga que hacer nada.",

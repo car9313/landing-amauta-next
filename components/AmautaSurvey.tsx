@@ -41,6 +41,19 @@ const FEATURE_EMOJIS: Record<string, string> = {
 
 const FEATURE_IDS = ['mascot', 'games', 'dashboard', 'offline'] as const;
 
+// Timeout en el cliente: si la API no responde (p. ej. Redis/Upstash caído),
+// aborta a los 10s para mostrar el estado de servicio enseguida en vez de esperar
+// el timeout largo del servidor (~68s).
+const fetchWithTimeout = async (url: string, options?: RequestInit, timeoutMs = 10000) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 export default function AmautaSurvey() {
   const { t } = useLanguage();
   const [voted, setVoted] = useState<boolean | null>(null);
@@ -50,12 +63,70 @@ export default function AmautaSurvey() {
   const [feedback, setFeedback] = useState<string>('');
   const [nickName, setNickName] = useState<string>('');
   const [stats, setStats] = useState<SurveyStats>(EMPTY_STATS);
+  const [statsError, setStatsError] = useState<boolean>(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [pendingSync, setPendingSync] = useState<boolean>(false);
+  const [serviceError, setServiceError] = useState<boolean>(false);
+
   const notificationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const syncIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const showNotification = useCallback((type: 'success' | 'error' | 'info', message: string) => {
     setNotification({ type, message });
   }, []);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetchWithTimeout('/api/survey/stats');
+      if (!res.ok) {
+        if (res.status === 503) setServiceError(true);
+        throw new Error(`Stats API error: ${res.status}`);
+      }
+      const data = await res.json();
+      setStats(data.stats);
+      setStatsError(false);
+      setServiceError(false);
+    } catch (error) {
+      console.error('Fetch stats failed:', error);
+      setStatsError(true);
+      setServiceError(true);
+    }
+  }, []);
+
+  const syncPendingVote = useCallback(async () => {
+    const pending = localStorage.getItem('amauta_survey_pending');
+    if (!pending) {
+      setPendingSync(false);
+      return;
+    }
+
+    setPendingSync(true);
+    try {
+      const res = await fetchWithTimeout('/api/survey/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: pending,
+      });
+      if (res.ok) {
+        localStorage.removeItem('amauta_survey_pending');
+        localStorage.setItem('amauta_interest_survey_completed', 'true');
+        setVoted(true);
+        showNotification('success', t('survey:notifSyncOk'));
+        await fetchStats();
+        setPendingSync(false);
+        setServiceError(false);
+      } else {
+        if (res.status === 503) setServiceError(true);
+        console.warn('Sync failed with status:', res.status);
+        setPendingSync(false);
+      }
+    } catch (error) {
+      console.warn('Sync network error, will retry later', error);
+      setPendingSync(false);
+      setServiceError(true);
+    }
+  }, [fetchStats, showNotification, t]);
 
   useEffect(() => {
     if (!notification) return;
@@ -65,28 +136,16 @@ export default function AmautaSurvey() {
     };
   }, [notification]);
 
-  const fetchStats = useCallback(async () => {
-    try {
-      const res = await fetch('/api/survey/stats');
-      if (!res.ok) {
-        console.error('Stats API error:', res.status);
-        return;
-      }
-      const data = await res.json();
-      setStats(data.stats);
-    } catch (error) {
-      console.error('Fetch stats failed:', error);
-    }
-  }, []);
-
   useEffect(() => {
-    const request = fetch('/api/survey/stats')
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`Stats API error: ${res.status}`))))
-      .then((data) => setStats(data.stats))
-      .catch((error) => console.error('Fetch stats failed:', error));
-
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsOnline(navigator.onLine);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
     return () => {
-      request.catch(() => {});
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
   }, []);
 
@@ -98,44 +157,48 @@ export default function AmautaSurvey() {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    const pending = localStorage.getItem('amauta_survey_pending');
-    if (!pending) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchStats();
+  }, [fetchStats]);
 
-    const sync = async () => {
-      try {
-        const res = await fetch('/api/survey/vote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: pending,
-        });
-        if (res.ok) {
-          localStorage.removeItem('amauta_survey_pending');
-          localStorage.setItem('amauta_interest_survey_completed', 'true');
-          if (!cancelled) setVoted(true);
-          showNotification('success', t('survey:notifSyncOk'));
-          if (!cancelled) await fetchStats();
-        }
-      } catch {
-        // Se reintentará en la próxima carga
+  useEffect(() => {
+    if (isOnline) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      syncPendingVote();
+    }
+  }, [isOnline, syncPendingVote]);
+
+  useEffect(() => {
+    const checkAndSync = () => {
+      const pending = localStorage.getItem('amauta_survey_pending');
+      if (pending && isOnline) {
+        syncPendingVote();
       }
     };
-    sync();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchStats, showNotification]);
+
+    syncIntervalRef.current = setInterval(checkAndSync, 30000);
+    return () => {
+      if (syncIntervalRef.current) clearInterval(syncIntervalRef.current);
+    };
+  }, [isOnline, syncPendingVote]);
 
   const handleInterestSelect = (value: string) => {
+    if (serviceError) return; // no permitir si servicio caído
     setLevelOfInterest(value);
   };
 
   const handleFeatureSelect = (value: string) => {
+    if (serviceError) return;
     setFavoriteFeature(value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
+    if (serviceError) {
+      showNotification('info', t('survey:serviceUnavailable'));
+      return;
+    }
     if (!levelOfInterest || !favoriteFeature) {
       showNotification('info', t('survey:validationError'))
       return
@@ -173,7 +236,7 @@ export default function AmautaSurvey() {
     });
 
     try {
-      const res = await fetch('/api/survey/vote', {
+      const res = await fetchWithTimeout('/api/survey/vote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(voto),
@@ -181,14 +244,18 @@ export default function AmautaSurvey() {
 
       if (res.ok) {
         showNotification('success', t('survey:notifVoteOk'));
-        fetchStats();
+        await fetchStats();
+        setServiceError(false);
       } else {
+        if (res.status === 503) setServiceError(true);
         throw new Error('Server error');
       }
     } catch {
       setStats(previousStats);
       localStorage.setItem('amauta_survey_pending', JSON.stringify(voto));
       showNotification('info', t('survey:notifPending'));
+      setPendingSync(true);
+      setServiceError(true);
     } finally {
       setSubmitting(false);
     }
@@ -225,6 +292,20 @@ export default function AmautaSurvey() {
         </div>
       )}
 
+      {/* Badge de estado (solo offline y sincronizando, sin servicio) */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2 text-xs font-bold">
+        {!isOnline && (
+          <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-amber-200">
+            <WifiOff className="w-3 h-3" /> {t('survey:offlineBadge')}
+          </span>
+        )}
+        {isOnline && !serviceError && pendingSync && (
+          <span className="bg-blue-100 text-amauta-blue px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-blue-200">
+            <span className="w-2 h-2 bg-amauta-orange rounded-full animate-pulse" /> {t('survey:syncing')}
+          </span>
+        )}
+      </div>
+
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amauta-blue-light/20 blur-3xl rounded-full pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-5 sm:px-8 relative z-10">
@@ -237,7 +318,15 @@ export default function AmautaSurvey() {
         />
 
         {/* Survey Box Layout */}
-        <Card className="bg-gradient-to-br from-slate-50 to-white rounded-3xl border border-neutral-200/80 shadow-[var(--shadow-lg)] p-6 sm:p-10">
+        <Card className="bg-gradient-to-br from-slate-50 to-white rounded-3xl border border-neutral-200/80 shadow-[var(--shadow-lg)] p-6 sm:p-10 relative">
+          {/* BANNER DE SERVICIO NO DISPONIBLE (sobre la encuesta) */}
+          {serviceError && (
+            <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 flex items-center gap-2 text-red-700 shadow-sm">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span className="text-sm font-bold">{t('survey:serviceBanner')}</span>
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
 
             {/* ── SKELETON — mientras lee localStorage ── */}
@@ -302,6 +391,7 @@ export default function AmautaSurvey() {
                         key={interest}
                         type="button"
                         onClick={() => handleInterestSelect(interest)}
+                        disabled={serviceError}
                         className={`p-4 rounded-2xl border-2 font-bold text-sm text-left transition-all min-h-[44px] cursor-pointer flex items-center gap-3 ${
                           levelOfInterest === interest
                             ? interest === 'high'
@@ -310,7 +400,7 @@ export default function AmautaSurvey() {
                                 ? 'border-amauta-blue bg-amauta-blue-light/40 text-amauta-blue-dark ring-2 ring-amauta-blue/25'
                                 : 'border-neutral-500 bg-neutral-100 text-neutral-800'
                             : 'border-neutral-200 bg-white hover:border-amauta-blue/30 text-foreground/80'
-                        }`}
+                        } ${serviceError ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
                       >
                         <span className="text-xl">{interest === 'high' ? '😍' : interest === 'medium' ? '🙂' : '😐'}</span>
                         <div>
@@ -334,12 +424,13 @@ export default function AmautaSurvey() {
                         key={featId}
                         type="button"
                         onClick={() => handleFeatureSelect(featId)}
+                        disabled={serviceError}
                         aria-pressed={favoriteFeature === featId}
                         className={`p-4 rounded-2xl border border-neutral-200/80 bg-white cursor-pointer hover:border-amauta-blue/40 transition-all flex items-center gap-3 border-l-4 ${
                           favoriteFeature === featId 
                             ? 'border-l-amauta-orange bg-amauta-orange-light/10 ring-1 ring-amauta-orange/15 shadow-sm' 
                             : 'hover:bg-slate-50'
-                        }`}
+                        } ${serviceError ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
                       >
                         <span className="text-2xl">{FEATURE_EMOJIS[`pref${featId.charAt(0).toUpperCase()}${featId.slice(1)}` as keyof typeof FEATURE_EMOJIS]}</span>
                         <div>
@@ -361,8 +452,11 @@ export default function AmautaSurvey() {
                     maxLength={200}
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
+                    disabled={serviceError}
                     placeholder={t('survey:q3Placeholder')}
-                    className="w-full p-4 rounded-2xl border border-neutral-200 bg-white focus:bg-white focus:border-amauta-orange focus:ring-2 focus:ring-amauta-orange/15 font-semibold text-sm outline-none placeholder:text-foreground/35 min-h-16"
+                    className={`w-full p-4 rounded-2xl border border-neutral-200 bg-white focus:bg-white focus:border-amauta-orange focus:ring-2 focus:ring-amauta-orange/15 font-semibold text-sm outline-none placeholder:text-foreground/35 min-h-16 ${
+                      serviceError ? 'opacity-60 cursor-not-allowed' : ''
+                    }`}
                   />
                 </div>
 
@@ -377,19 +471,28 @@ export default function AmautaSurvey() {
                       maxLength={30}
                       value={nickName}
                       onChange={(e) => setNickName(e.target.value)}
+                      disabled={serviceError}
                       placeholder={t('survey:q4Placeholder')}
-                      className="w-full h-11 rounded-xl border border-neutral-200 px-4 bg-white focus:border-amauta-blue focus:ring-2 focus:ring-amauta-blue/10 outline-none font-bold text-sm"
+                      className={`w-full h-11 rounded-xl border border-neutral-200 px-4 bg-white focus:border-amauta-blue focus:ring-2 focus:ring-amauta-blue/10 outline-none font-bold text-sm ${
+                        serviceError ? 'opacity-60 cursor-not-allowed' : ''
+                      }`}
                     />
                   </div>
                 </div>
 
                 {/* Submission button */}
-                <div className="pt-4 flex justify-end">
+                <div className="pt-4 flex justify-end items-center gap-3">
+                  {pendingSync && (
+                    <span className="text-xs text-amber-600 flex items-center gap-1">
+                      <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                      {serviceError ? t('survey:waitingService') : t('survey:syncing')}
+                    </span>
+                  )}
                   <Button
                     type="submit"
-                    disabled={submitting}
-                    className={`w-full sm:w-auto bg-gradient-to-r from-amauta-blue to-amauta-blue-dark text-white font-black px-8 py-3.5 rounded-xl shadow-[var(--shadow-md)] hover:shadow-glow-blue transition-all duration-200 cursor-pointer min-h-[44px] flex items-center justify-center gap-2 uppercase tracking-wider text-xs border-none ${
-                      submitting ? 'opacity-60 cursor-not-allowed' : ''
+                    disabled={submitting || serviceError}
+                    className={`w-full sm:w-auto bg-gradient-to-r from-amauta-blue to-amauta-blue-dark text-white font-black px-8 py-3.5 rounded-xl shadow-[var(--shadow-md)] hover:shadow-glow-blue hover:-translate-y-0.5 hover:scale-[1.03] active:scale-95 transition-all duration-200 cursor-pointer min-h-[44px] flex items-center justify-center gap-2 uppercase tracking-wider text-xs border-none ${
+                      (submitting || serviceError) ? 'opacity-60 cursor-not-allowed' : ''
                     }`}
                   >
                     <span>{submitting ? t('survey:submitting') : t('survey:submit')}</span>
@@ -429,81 +532,97 @@ export default function AmautaSurvey() {
                     <span>{t('survey:statsHeading', { total: totalVotes })}</span>
                   </div>
 
-                  {totalVotes === 0 && (
+                  {statsError ? (
+                    <div className="text-center py-6 text-foreground/60">
+                      <AlertCircle className="w-8 h-8 mx-auto text-amber-500 mb-2" />
+                      <p className="font-semibold">{t('survey:statsErrorTitle')}</p>
+                      <p className="text-sm">{t('survey:statsErrorBody')}</p>
+                      <button
+                        onClick={fetchStats}
+                        className="mt-3 text-sm font-bold text-amauta-blue hover:underline cursor-pointer"
+                      >
+                        {t('survey:retry')}
+                      </button>
+                    </div>
+                  ) : totalVotes === 0 && (
                     <p className="text-xs text-foreground/50 italic text-center py-4">
                       {t('survey:statsEmpty')}
                     </p>
                   )}
 
-                  {/* Stat 1: Love It */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs sm:text-sm font-bold">
-                      <span className="text-amauta-blue-dark flex items-center gap-1.5">
-                        <Heart className="w-3.5 h-3.5 text-amauta-orange fill-amauta-orange" />
-                        <span>{t('survey:statLove')}</span>
-                      </span>
-                      <span className="text-amauta-orange-dark font-mono font-black">{lovePct}%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }} 
-                        animate={{ width: `${lovePct}%` }} 
-                        transition={{ duration: 1, ease: 'easeOut' }}
-                        className="bg-gradient-to-r from-amauta-orange to-amauta-orange-dark h-full rounded-full" 
-                      />
-                    </div>
-                  </div>
+                  {!statsError && totalVotes > 0 && (
+                    <>
+                      {/* Stat 1: Love It */}
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs sm:text-sm font-bold">
+                          <span className="text-amauta-blue-dark flex items-center gap-1.5">
+                            <Heart className="w-3.5 h-3.5 text-amauta-orange fill-amauta-orange" />
+                            <span>{t('survey:statLove')}</span>
+                          </span>
+                          <span className="text-amauta-orange-dark font-mono font-black">{lovePct}%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }} 
+                            animate={{ width: `${lovePct}%` }} 
+                            transition={{ duration: 1, ease: 'easeOut' }}
+                            className="bg-gradient-to-r from-amauta-orange to-amauta-orange-dark h-full rounded-full" 
+                          />
+                        </div>
+                      </div>
 
-                  {/* Stat 2: Medium interest */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs sm:text-sm font-bold">
-                      <span className="text-amauta-blue-dark flex items-center gap-1.5">
-                        <ThumbsUp className="w-3.5 h-3.5 text-amauta-blue fill-amauta-blue" />
-                        <span>{t('survey:statInterest')}</span>
-                      </span>
-                      <span className="text-amauta-blue font-mono font-black">{interestPct}%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }} 
-                        animate={{ width: `${interestPct}%` }} 
-                        transition={{ duration: 1, delay: 0.1, ease: 'easeOut' }}
-                        className="bg-gradient-to-r from-amauta-blue to-amauta-blue-dark h-full rounded-full" 
-                      />
-                    </div>
-                  </div>
+                      {/* Stat 2: Medium interest */}
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs sm:text-sm font-bold">
+                          <span className="text-amauta-blue-dark flex items-center gap-1.5">
+                            <ThumbsUp className="w-3.5 h-3.5 text-amauta-blue fill-amauta-blue" />
+                            <span>{t('survey:statInterest')}</span>
+                          </span>
+                          <span className="text-amauta-blue font-mono font-black">{interestPct}%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }} 
+                            animate={{ width: `${interestPct}%` }} 
+                            transition={{ duration: 1, delay: 0.1, ease: 'easeOut' }}
+                            className="bg-gradient-to-r from-amauta-blue to-amauta-blue-dark h-full rounded-full" 
+                          />
+                        </div>
+                      </div>
 
-                  {/* Stat 3: Unsure */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs sm:text-sm font-bold">
-                      <span className="text-amauta-blue-dark flex items-center gap-1.5">
-                        <span>😐</span>
-                        <span>{t('survey:statUnsure')}</span>
-                      </span>
-                      <span className="text-foreground/40 font-mono font-black">{unsurePct}%</span>
-                    </div>
-                    <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }} 
-                        animate={{ width: `${unsurePct}%` }} 
-                        transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
-                        className="bg-neutral-300 h-full rounded-full" 
-                      />
-                    </div>
-                  </div>
+                      {/* Stat 3: Unsure */}
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-xs sm:text-sm font-bold">
+                          <span className="text-amauta-blue-dark flex items-center gap-1.5">
+                            <span>😐</span>
+                            <span>{t('survey:statUnsure')}</span>
+                          </span>
+                          <span className="text-foreground/40 font-mono font-black">{unsurePct}%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }} 
+                            animate={{ width: `${unsurePct}%` }} 
+                            transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
+                            className="bg-neutral-300 h-full rounded-full" 
+                          />
+                        </div>
+                      </div>
 
-                  {/* Highlight feature opinion footer */}
-                  {sortedFeatures.length > 0 && (
-                    <div className="pt-4 border-t border-neutral-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-bold text-foreground/50">
-                      {sortedFeatures.map(({ key, label, count }) => {
-                        const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
-                        return (
-                          <div key={key}>
-                            {FEATURE_EMOJIS[key]} {t('survey:featureHighlight', { pct, feature: label })}
-                          </div>
-                        );
-                      })}
-                    </div>
+                      {/* Highlight feature opinion footer */}
+                      {sortedFeatures.length > 0 && (
+                        <div className="pt-4 border-t border-neutral-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-bold text-foreground/50">
+                          {sortedFeatures.map(({ key, label, count }) => {
+                            const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+                            return (
+                              <div key={key}>
+                                {FEATURE_EMOJIS[key]} {t('survey:featureHighlight', { pct, feature: label })}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 

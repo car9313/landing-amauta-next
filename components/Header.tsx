@@ -73,7 +73,7 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
         className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
           isScrolled
             ? "bg-white text-amauta-blue border-b border-border/70 shadow-md py-3"
-            : "bg-transparent text-white py-5"
+            : "bg-transparent text-amauta-blue py-5"
         }`}
       >
         <div className="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between">
@@ -83,7 +83,7 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
               e.preventDefault();
               handleNavClick("#inicio");
             }}
-            className="flex items-center gap-2.5 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-amauta-orange rounded-lg min-h-[44px] px-2"
+            className="flex items-center gap-2.5 group cursor-pointer focus:outline-none min-h-[44px] px-2"
           >
             <Image
               src="/logo.png"
@@ -91,11 +91,11 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
               width={160}
               height={64}
               priority
-              className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105 hover:shadow-lg"
+              className="h-16 w-auto object-contain"
             />
           </a>
 
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-4">
             {NAV_ITEMS.map((item) => {
               const active = isActiveItem(item.id);
 
@@ -107,23 +107,19 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
                     e.preventDefault();
                     handleNavClick(item.id);
                   }}
-                  className={`relative font-bold text-sm tracking-wide transition-colors duration-200 cursor-pointer flex items-center justify-center min-h-[44px] px-2 ${
+                  className={cn(
+                    "relative font-bold text-sm tracking-wide transition-colors duration-200 cursor-pointer flex items-center justify-center min-h-[44px] px-2",
                     active
-                      ? isScrolled
-                        ? "text-amauta-blue"
-                        : "text-white"
-                      : isScrolled
-                        ? "text-amauta-blue/75 hover:text-amauta-orange"
-                        : "text-white/80 hover:text-white"
-                  }`}
+                      ? "text-amauta-blue"
+                      : "text-amauta-blue hover:text-amauta-orange",
+                  )}
                 >
                   {t(`navigation:items.${item.key}`)}
+
                   {active && (
                     <motion.div
                       layoutId="activeIndicator"
-                      className={`absolute bottom-0 left-0 right-0 h-px rounded-full ${
-                        isScrolled ? "bg-amauta-blue" : "bg-white"
-                      }`}
+                      className="absolute bottom-0 left-0 right-0 h-px rounded-full bg-amauta-blue"
                     />
                   )}
                 </a>
@@ -148,11 +144,7 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
 
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
-            className={`lg:hidden rounded-xl p-2.5 flex flex-col justify-center items-center gap-1.5 min-w-[44px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-amauta-orange relative ${
-              isScrolled
-                ? "hover:bg-amauta-blue-light/50 text-amauta-blue"
-                : "hover:bg-white/10 text-white"
-            }`}
+            className="lg:hidden rounded-xl p-2.5 flex flex-col justify-center items-center gap-1.5 min-w-[44px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-amauta-orange relative hover:bg-amauta-blue-light/50 text-amauta-blue"
             aria-label={t('common:toggleMenu')}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
@@ -160,23 +152,17 @@ export default function Header({ onStartClick, activeSection }: HeaderProps) {
             <motion.span
               animate={mobileMenuOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
               transition={{ type: "spring", stiffness: 280, damping: 18 }}
-              className={`w-6 h-0.75 rounded-full ${
-                isScrolled ? "bg-amauta-blue" : "bg-white"
-              }`}
+              className="w-6 h-0.75 rounded-full bg-amauta-blue"
             />
             <motion.span
               animate={mobileMenuOpen ? { opacity: 0, x: -12 } : { opacity: 1, x: 0 }}
               transition={{ duration: 0.15 }}
-              className={`w-6 h-0.75 rounded-full ${
-                isScrolled ? "bg-amauta-blue" : "bg-white"
-              }`}
+              className="w-6 h-0.75 rounded-full bg-amauta-blue"
             />
             <motion.span
               animate={mobileMenuOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
               transition={{ type: "spring", stiffness: 280, damping: 18 }}
-              className={`w-6 h-0.75 rounded-full ${
-                isScrolled ? "bg-amauta-blue" : "bg-white"
-              }`}
+              className="w-6 h-0.75 rounded-full bg-amauta-blue"
             />
           </button>
         </div>
