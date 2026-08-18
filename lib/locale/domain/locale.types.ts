@@ -31,6 +31,8 @@ export interface GeoResult {
   success: boolean;
   localeId?: LocaleId;
   reason?: GeoFailureReason;
+  /** País detectado (ISO alpha-2) para logs de decisión. */
+  countryCode?: string;
 }
 
 export type LocaleNamespace =

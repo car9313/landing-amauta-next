@@ -1,6 +1,7 @@
 import type { GeoFailureReason, GeoResult } from "../domain/locale.types";
 import { GEO_SOURCES, GEO_TIMEOUT_MS } from "../domain/locale.constants";
 import { LOCALE_MAP } from "../domain/locale.config";
+import { fallbackLocaleForCountry } from "../domain/locale-languages";
 
 const IS_DEV = process.env.NODE_ENV === "development";
 
@@ -76,22 +77,33 @@ export async function detectGeoLocale(externalSignal?: AbortSignal): Promise<Geo
   }
 
   let lastReason: GeoFailureReason = "network_error";
+  let lastCountryCode: string | undefined;
 
   for (const source of GEO_SOURCES) {
     if (externalSignal?.aborted) break;
     try {
       const countryCode = await fetchCountryFromSource(source);
       devLog("fuente:", source, "-> country:", countryCode);
+      lastCountryCode = countryCode;
 
+      // 1. Traducción regional del país (su propia traducción)
       const localeId = LOCALE_MAP[countryCode];
-      if (!localeId) {
-        devLog("país sin mapeo:", countryCode);
-        lastReason = "unmapped_country";
-        continue;
+      if (localeId) {
+        devLog("LOCALE_MAP[", countryCode, "] ->", localeId);
+        return { success: true, localeId, countryCode };
       }
 
-      devLog("LOCALE_MAP[", countryCode, "] ->", localeId);
-      return { success: true, localeId };
+      // 2. País sin traducción regional pero con idioma conocido → default por idioma
+      const fallbackLocale = fallbackLocaleForCountry(countryCode);
+      if (fallbackLocale) {
+        const language = fallbackLocale === "en" ? "habla inglesa" : "habla hispana";
+        devLog("país sin traducción regional:", countryCode, "->", language, "->", fallbackLocale);
+        return { success: true, localeId: fallbackLocale, countryCode };
+      }
+
+      // 3. País sin traducción ni idioma conocido → fallback navegador/default
+      devLog("país sin traducción ni idioma conocido:", countryCode);
+      lastReason = "unmapped_country";
     } catch (error) {
       const reason = error instanceof GeoFetchError ? error.reason : "network_error";
       lastReason = reason;
@@ -100,5 +112,5 @@ export async function detectGeoLocale(externalSignal?: AbortSignal): Promise<Geo
   }
 
   devLog("geo-detección falló en todas las fuentes:", lastReason);
-  return { success: false, reason: lastReason };
+  return { success: false, reason: lastReason, countryCode: lastCountryCode };
 }

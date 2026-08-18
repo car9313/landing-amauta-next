@@ -5,13 +5,15 @@ import { isLocaleSupported } from "../utils/locale-utils";
 import type { LocaleId } from "../domain/locale.types";
 
 export async function resolveServerLocale(): Promise<LocaleId> {
-  const cookieStore = await cookies();
-  const cookieLocale = cookieStore.get(COOKIE_KEY)?.value;
-  if (isLocaleSupported(cookieLocale)) return cookieLocale;
-
+  // El header es la decisión fresca del proxy por request (geo > cookie);
+  // la cookie queda como fallback cuando el proxy no corre (matcher, otros hosts).
   const headerStore = await headers();
   const headerLocale = headerStore.get(I18N_LOCALE_HEADER);
   if (isLocaleSupported(headerLocale)) return headerLocale;
+
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(COOKIE_KEY)?.value;
+  if (isLocaleSupported(cookieLocale)) return cookieLocale;
 
   return DEFAULT_LOCALE;
 }

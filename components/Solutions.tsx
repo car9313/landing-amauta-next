@@ -1,6 +1,6 @@
 'use client';
 
-import {useRef} from 'react';
+import {Fragment, useRef} from 'react';
 import {motion, useMotionValue, useSpring, useTransform} from 'motion/react';
 import {ArrowRight, BarChart3, Brain, type LucideIcon, Pencil, School, Target, Users, WifiOff} from 'lucide-react';
 import {SectionHeader} from '@/components/ui/section-header';
@@ -206,7 +206,7 @@ export default function Solutions({onStartClick}: SolutionsProps) {
                     className="mb-14 flex flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0"
                 >
                     {LOOP_IDS.map((id, i) => (
-                        <>
+                        <Fragment key={id}>
                             <motion.div
                                 key={id}
                                 variants={{
@@ -228,7 +228,7 @@ export default function Solutions({onStartClick}: SolutionsProps) {
                                     <ArrowRight className="h-6 w-6 text-amauta-blue/25"/>
                                 </div>
                             )}
-                        </>
+                        </Fragment>
                     ))}
                 </motion.div>
 
