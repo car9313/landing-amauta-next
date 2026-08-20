@@ -276,7 +276,7 @@ export default function AmautaSurvey() {
     .slice(0, 2);
 
   return (
-    <section id="encuesta" className="py-20 bg-white relative overflow-hidden border-t border-border/40">
+    <section id="encuesta" className="py-12 sm:py-20 bg-white relative overflow-hidden border-t border-border/40">
       {notification && (
         <div
           className={`fixed bottom-4 right-4 z-50 px-5 py-3 rounded-2xl shadow-xl text-sm font-bold flex items-center gap-2.5 animate-in slide-in-from-bottom-2 ${

@@ -175,7 +175,7 @@ export default function Solutions({onStartClick}: SolutionsProps) {
     return (
         <section
             id="soluciones"
-            className="relative overflow-hidden bg-[#FAF9F6] py-20 sm:py-24"
+            className="relative overflow-hidden bg-[#FAF9F6] py-12 sm:py-24"
         >
             {/* Background decorations */}
             <div
@@ -244,7 +244,7 @@ export default function Solutions({onStartClick}: SolutionsProps) {
                         hidden: {opacity: 0},
                         show: {opacity: 1, transition: {staggerChildren: 0.12}},
                     }}
-                    className="mb-24 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+                    className="mb-12 sm:mb-24 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
                 >
                     {OUTCOME_IDS.map((id) => (
                         <motion.div
@@ -283,7 +283,7 @@ export default function Solutions({onStartClick}: SolutionsProps) {
 
                 {/* Offline Differentiator */}
                 <div
-                    className="mt-24 overflow-hidden rounded-3xl bg-linear-to-r from-amauta-blue to-amauta-blue-dark p-8 text-white shadow-lg sm:p-12">
+                    className="mt-12 sm:mt-24 overflow-hidden rounded-3xl bg-linear-to-r from-amauta-blue to-amauta-blue-dark p-8 text-white shadow-lg sm:p-12">
                     <div
                         className="absolute inset-0 opacity-[0.05] pointer-events-none bg-size-[20px_20px] bg-[radial-gradient(#ffffff_1px,transparent_1px)]"/>
 

@@ -309,12 +309,14 @@
 /* Custom overall page styles */
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
   font-family: "Nunito", "Inter", sans-serif;
   background-color: var(--background);
   color: var(--foreground);
+  overflow-x: clip;
 }
 
 

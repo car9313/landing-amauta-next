@@ -1,8 +1,14 @@
 'use client';
 
-import {motion, useReducedMotion} from 'motion/react';
-import {CreditCard, Footprints, Heart, Puzzle, Sparkles, Target,} from 'lucide-react';
+import {useEffect, useRef, useState} from 'react';
+import {motion, useInView, useReducedMotion, useScroll, useTransform} from 'motion/react';
+import {CreditCard, Footprints, Heart, Puzzle, Sparkles, Target, type LucideIcon,} from 'lucide-react';
 import Image from 'next/image';
+import {Swiper, SwiperSlide} from 'swiper/react';
+import type {Swiper as SwiperClass} from 'swiper';
+import {Pagination} from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 import {useLanguage} from '@/lib/locale/hooks/useLanguage';
 import {AmautaButton} from "@/components/ui/AmautaPrimaryButton";
 
@@ -13,12 +19,90 @@ interface HeroProps {
 const PILLAR_ICONS = [Target, Footprints, Puzzle, Heart];
 const EASE_OUT_BACK = [0.34, 1.56, 0.64, 1] as const;
 
+// ─── Contenido de un pilar (carrusel móvil y grilla sm+) ───────────────────────
+function PillarItem({Icon, text}: {Icon: LucideIcon; text: string}) {
+    return (
+        <>
+            <span
+                className="
+                    flex size-12 shrink-0 items-center justify-center
+                    rounded-full bg-amauta-orange/10 text-amauta-orange
+                    transition-colors duration-200
+                    group-hover:bg-amauta-orange/20
+                    group-hover:text-amauta-orange-dark
+                "
+            >
+                <Icon className="size-6"/>
+            </span>
+            <span
+                className="
+                    text-base font-semibold leading-snug
+                    text-amauta-blue-dark/80
+                    transition-colors duration-200
+                    group-hover:text-amauta-blue-dark
+                    sm:text-lg
+                "
+            >
+                {text}
+            </span>
+        </>
+    );
+}
+
 export function Hero({onParentCTA}: HeroProps) {
     const {t} = useLanguage();
     const shouldReduceMotion = useReducedMotion();
 
     const rawPillars = t('hero:pillars', {returnObjects: true});
     const pillars = Array.isArray(rawPillars) ? rawPillars : [];
+
+    // ── Carrusel móvil: scroll-driven + autoplay (híbrido) ──
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const swiperRef = useRef<SwiperClass>(null);
+    const carouselInView = useInView(carouselRef, {amount: 0.2});
+
+    const {scrollYProgress} = useScroll({
+        target: carouselRef,
+        offset: ['start 1.2', 'end -0.2'],
+    });
+
+    const scrollSlide = useTransform(scrollYProgress, (v) => {
+        const threshold = 1 / pillars.length;
+        for (let i = 0; i < pillars.length - 1; i++) {
+            if (v < threshold * (i + 1)) return i;
+        }
+        return pillars.length - 1;
+    });
+
+    const [activeSlide, setActiveSlide] = useState<number>(0);
+    const lastScrollChangeRef = useRef<number>(0);
+
+    useEffect(() => {
+        lastScrollChangeRef.current = Date.now();
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = scrollSlide.on('change', (value) => {
+            setActiveSlide(value);
+            lastScrollChangeRef.current = Date.now();
+        });
+        return unsubscribe;
+    }, [scrollSlide]);
+
+    useEffect(() => {
+        swiperRef.current?.slideTo(activeSlide, 700);
+    }, [activeSlide]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        if (!window.matchMedia('(max-width: 639px)').matches) return;
+        if (!carouselInView) return;
+        const id = setInterval(() => {
+            if (Date.now() - lastScrollChangeRef.current < 4000) return;
+            setActiveSlide((prev) => (prev + 1) % pillars.length);
+        }, 4000);
+        return () => clearInterval(id);
+    }, [pillars.length, carouselInView]);
 
     const reveal = {
         hidden: {opacity: 0, y: shouldReduceMotion ? 0 : 24},
@@ -70,7 +154,7 @@ export function Hero({onParentCTA}: HeroProps) {
             <div
                 className="
                     relative z-10 mx-auto grid w-full max-w-7xl items-start gap-6
-                    pb-20 pt-10 lg:grid-cols-2 lg:gap-8 lg:pb-24 lg:pt-16 xl:gap-10
+                    pb-12 pt-10 lg:grid-cols-2 lg:gap-8 lg:pb-24 lg:pt-16 xl:gap-10
                 "
             >
                 {/* Texto */}
@@ -280,30 +364,66 @@ export function Hero({onParentCTA}: HeroProps) {
             </div>
 
             {/* Pilares */}
-            {/* Pilares */}
             <motion.div
                 initial={{opacity: 0, y: shouldReduceMotion ? 0 : 20}}
                 whileInView={{opacity: 1, y: 0}}
                 viewport={{once: true, amount: 0.2}}
                 transition={{duration: shouldReduceMotion ? 0 : 0.7, ease: EASE_OUT_BACK}}
                 className="
-        relative z-10
-        border-t border-amauta-blue-dark/8
-        bg-white/80
-        shadow-[0_-8px_30px_rgba(10,29,58,0.04)]
-        backdrop-blur-sm
-        rounded-3xl
-    "
+                    relative z-10
+                    border-t border-amauta-blue-dark/8
+                    bg-white/80
+                    shadow-[0_-8px_30px_rgba(10,29,58,0.04)]
+                    backdrop-blur-sm
+                    rounded-3xl
+                "
             >
+                {/* Móvil (<sm): carrusel con 1 pilar por slide */}
+                <div ref={carouselRef} className="sm:hidden">
+                    <div className="relative mx-auto h-40 w-full max-w-7xl px-4 py-2">
+                        <Swiper
+                            modules={[Pagination]}
+                            slidesPerView={1}
+                            spaceBetween={16}
+                            grabCursor
+                            onSwiper={(swiper) => {
+                                swiperRef.current = swiper;
+                            }}
+                            onSlideChange={(swiper) => {
+                                setActiveSlide(swiper.activeIndex);
+                                lastScrollChangeRef.current = Date.now();
+                            }}
+                            pagination={{clickable: true}}
+                            className="h-full [&.swiper]:touch-pan-y [&_.swiper-pagination-bullet-active]:bg-amauta-orange"
+                        >
+                            {pillars.map((pillar, index) => {
+                                const Icon = PILLAR_ICONS[index];
+                                return (
+                                    <SwiperSlide key={pillar} className="flex items-center justify-center">
+                                        <div
+                                            className="
+                                                group flex w-full items-center gap-4
+                                                rounded-2xl bg-white/60 px-4 py-5
+                                                border border-transparent
+                                            "
+                                        >
+                                            <PillarItem Icon={Icon} text={pillar}/>
+                                        </div>
+                                    </SwiperSlide>
+                                );
+                            })}
+                        </Swiper>
+                    </div>
+                </div>
+
+                {/* Tablet (sm) y desktop (lg): grilla */}
                 <ul
                     className="
-            mx-auto grid w-full max-w-7xl
-            gap-4
-            px-4 py-6
-            max-sm:grid-cols-1
-            sm:grid-cols-2 sm:gap-5 sm:px-5 sm:py-8
-            lg:grid-cols-4
-        "
+                        mx-auto hidden w-full max-w-7xl
+                        gap-4
+                        sm:grid sm:grid-cols-2 sm:gap-5 sm:px-5 sm:py-8
+                        lg:grid-cols-4
+                    "
                 >
                     {pillars.map((pillar, index) => {
                         const Icon = PILLAR_ICONS[index];
@@ -324,41 +444,20 @@ export function Hero({onParentCTA}: HeroProps) {
                                         : {y: -4, scale: 1.02}
                                 }
                                 className="
-                        group
-                        flex items-center gap-4
-                        rounded-2xl
-                        px-4 py-5
-                        bg-white/60
-                        border border-transparent
-                        transition-all duration-200
-                        hover:bg-amauta-orange/5
-                        hover:border-amauta-orange/20
-                        hover:shadow-md
-                        sm:px-5 sm:py-4
-                    "
+                                    group
+                                    flex items-center gap-4
+                                    rounded-2xl
+                                    px-4 py-5
+                                    bg-white/60
+                                    border border-transparent
+                                    transition-all duration-200
+                                    hover:bg-amauta-orange/5
+                                    hover:border-amauta-orange/20
+                                    hover:shadow-md
+                                    sm:px-5 sm:py-4
+                                "
                             >
-                    <span
-                        className="
-                            flex size-12 shrink-0 items-center justify-center
-                            rounded-full bg-amauta-orange/10 text-amauta-orange
-                            transition-colors duration-200
-                            group-hover:bg-amauta-orange/20
-                            group-hover:text-amauta-orange-dark
-                        "
-                    >
-                        <Icon className="size-6"/>
-                    </span>
-                                <span
-                                    className="
-                            text-base font-semibold leading-snug
-                            text-amauta-blue-dark/80
-                            transition-colors duration-200
-                            group-hover:text-amauta-blue-dark
-                            sm:text-lg
-                        "
-                                >
-                        {pillar}
-                    </span>
+                                <PillarItem Icon={Icon} text={pillar}/>
                             </motion.li>
                         );
                     })}

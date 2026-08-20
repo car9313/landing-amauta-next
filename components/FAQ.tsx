@@ -18,7 +18,7 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="relative overflow-hidden bg-[#FAF9F6] py-20 sm:py-24"
+      className="relative overflow-hidden bg-[#FAF9F6] py-12 sm:py-24"
     >
       <div className="pointer-events-none absolute left-0 top-1/4 h-96 w-96 rounded-full bg-linear-to-r from-amauta-blue-light/20 to-transparent blur-3xl" />
       <div className="pointer-events-none absolute bottom-1/4 right-0 h-96 w-96 rounded-full bg-linear-to-l from-amauta-orange-light/10 to-transparent blur-3xl" />

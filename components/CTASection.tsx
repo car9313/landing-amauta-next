@@ -15,7 +15,7 @@ export default function CTASection({onParentCTA}: CTASectionProps) {
     return (
         <section
             id="empieza-ahora"
-            className="relative py-16 sm:py-24 bg-linear-to-tr from-amauta-blue via-amauta-blue-dark to-amauta-orange text-white overflow-hidden"
+            className="relative py-12 sm:py-24 bg-linear-to-tr from-amauta-blue via-amauta-blue-dark to-amauta-orange text-white overflow-hidden"
         >
             <div className="noise-overlay"/>
             <div

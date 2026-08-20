@@ -37,7 +37,7 @@ export default function Problems() {
   return (
     <section
       id="problemas"
-      className="relative overflow-hidden bg-linear-to-b from-slate-100 via-white to-white py-20 sm:py-24"
+      className="relative overflow-hidden bg-linear-to-b from-slate-100 via-white to-white py-12 sm:py-24"
     >
       {/* Decorativos */}
       <div className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full bg-linear-to-br from-amauta-blue-light/40 to-transparent blur-3xl" />

@@ -7,13 +7,14 @@ interface SectionHeaderProps {
   };
   title: React.ReactNode;
   description: string;
+  className?: string;
 }
 
-export function SectionHeader({ badge, title, description }: SectionHeaderProps) {
+export function SectionHeader({ badge, title, description, className }: SectionHeaderProps) {
   const Icon = badge.icon;
 
   return (
-    <div className="mx-auto mb-16 max-w-2xl text-center">
+    <div className={`mx-auto max-w-2xl text-center ${className ?? 'mb-16'}`}>
       <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-amauta-orange/15 bg-amauta-orange-light/30 px-3.5 py-1.5 text-xs font-black uppercase tracking-widest text-amauta-orange-dark">
         <Icon className="h-3.5 w-3.5" />
         <span>{badge.text}</span>

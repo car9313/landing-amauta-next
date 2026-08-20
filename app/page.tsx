@@ -30,7 +30,7 @@ export default function Home() {
     window.open(REGISTER_URL, '_blank', 'noopener,noreferrer');
 
   return (
-    <div className="relative min-h-screen bg-background overflow-x-hidden select-none">
+    <div className="relative min-h-screen bg-background select-none">
       <Header onStartClick={handleParentCTA} activeSection={activeSection} />
       <Hero  onParentCTA={handleParentCTA} />
       <Problems />
