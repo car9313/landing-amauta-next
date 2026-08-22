@@ -3,6 +3,9 @@
   "titleLine1": "Nobody says it out loud,",
   "titleLine2": "but everyone feels it",
   "description": "Do you relate to any of these everyday situations with your kids?",
+  "mobile": {
+    "swipeHint": "Swipe to see each challenge"
+  },
   "items": {
     "deberes": {
       "label": "Frustration",

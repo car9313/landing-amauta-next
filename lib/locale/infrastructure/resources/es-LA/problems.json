@@ -3,6 +3,9 @@
   "titleLine1": "Nadie lo dice en voz alta,",
   "titleLine2": "pero todos lo sienten",
   "description": "¿Te sientes identificado con alguna de estas situaciones diarias con tus hijos?",
+  "mobile": {
+    "swipeHint": "Desliza para ver cada desafío"
+  },
   "items": {
     "deberes": {
       "label": "Frustración",

@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Documentación
+
+- [`GUIDE.md`](GUIDE.md) — guía replicable de la internacionalización por geolocalización (arquitectura, traducciones, integración, checklist).
+- [`docs/replicar-cambios-i18n.md`](docs/replicar-cambios-i18n.md) — delta con los cambios puntuales (geo siempre gana + fallback por idioma) para portarlos a otro proyecto.
+- [`docs/plan-mascota.md`](docs/plan-mascota.md) · [`docs/survey-flujo.md`](docs/survey-flujo.md) — planes de funcionalidades.
+
 ## Getting Started
 
 First, run the development server:
@@ -14,7 +20,7 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3002](http://localhost:3002) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

@@ -1,8 +1,10 @@
 # Guía — Internacionalización con geolocalización (replicable)
 
-**Propósito:** aplicar la misma i18n por geolocalización implementada en este proyecto (Axentra) a cualquier otra landing con Next.js 16 + App Router (client-heavy).
+**Propósito:** aplicar la misma i18n por geolocalización implementada en este proyecto (Amauta) a cualquier otra landing con Next.js 16 + App Router (client-heavy).
 
-**Referencia de implementación:** `lib/locale/` + `app/components/locale/` + `proxy.ts` + `app/layout.tsx` en este repositorio.
+**Referencia de implementación:** `lib/locale/` + `components/locale/` + `proxy.ts` + `app/layout.tsx` en este repositorio.
+
+**Para portar los cambios puntuales recientes a un proyecto existente:** ver [`docs/replicar-cambios-i18n.md`](docs/replicar-cambios-i18n.md).
 
 ---
 
@@ -10,10 +12,10 @@
 
 ```
 proxy.ts (edge)              → detecta país por headers del hosting y pone la cookie
-lib/locale/domain/           → idiomas soportados + mapa país→locale + constantes
+lib/locale/domain/           → idiomas soportados + mapa país→locale + idiomas de países + constantes
 lib/locale/infrastructure/   → init de i18next, geo client-side, cookies
 lib/locale/hooks/            → useLanguage (t) y useLocale (formatNumber/Date)
-app/components/locale/       → LocaleProvider (Context), LanguageSwitcher, LocaleSplash
+components/locale/           → LocaleProvider (Context), LanguageSwitcher, LocaleSplash
 app/layout.tsx (server)      → <html lang> + metadata localizada en el primer render
 public/locales/{id}/         → bundles regionales descargados en runtime
 ```
@@ -22,62 +24,56 @@ public/locales/{id}/         → bundles regionales descargados en runtime
 
 ```
 LocaleProvider (cliente, boot "una vez"):
-1. ?locale=            → override de prueba: se aplica (el proxy lo persiste)
-2. <html lang> SSR     → si NO es default: el proxy ya calculó el país del hosting
-3. Cookie "locale"     → persistencia 1 año (2º ingreso+)
-4. Geo client-side (cloudflare /cdn-cgi/trace → fallback ipwho.is) + navigator
-   → solo cuando no hay SSR regional ni cookie
+1. ?locale=            → override de prueba: se aplica sin geo ni persistencia
+2. Provisional (primer paint, NO definitivo):
+   <html lang> SSR → cookie "locale" → navigator.language → es-LA
+3. Geo client-side SIEMPRE se ejecuta (en paralelo al primer paint) y tiene
+   prioridad sobre el provisional:
+   - geo ≠ provisional → splash + traducción + re-persistencia de cookie
+   - geo = provisional → no-op (sin re-traducir, sin re-persistir)
 ```
+
+> La geo la resuelve el **navegador** contra fuentes públicas (Cloudflare
+> `cdn-cgi/trace` → `ipwho.is`). No depende del hosting: funciona igual en
+> Vercel, Netlify, un VPS o cualquier otro despliegue.
 
 ### Servidor (proxy.ts, se evalúa en CADA request)
 
 ```
 ?locale= → header país del hosting (cf-ipcountry, x-vercel-ip-country,
-           cloudfront-viewer-country, cdn-viewer-country) → LOCALE_MAP → cookie
+           cloudfront-viewer-country, cdn-viewer-country) → LOCALE_MAP
+           → fallbackLocaleForCountry (idioma del país) → cookie
 ```
 
-### Regla de traducción: la geo solo traduce si difiere de la cookie
+El proxy es una **optimización de primer paint**, no una dependencia: si el
+hosting manda headers de país, el SSR ya renderiza en el idioma correcto; si no,
+el cliente lo corrige con su propia geo en la misma carga.
 
-La cookie `locale` se reescribe **únicamente cuando el país detectado difiere de la
-cookie existente** (con guarda: el default sin cookie previa no se persiste). Toda
-visita evalúa la geolocalización; el cambio de idioma ocurre solo cuando el país
-cambió respecto a lo almacenado.
+### Prioridad final del idioma
 
-| Caso | Resultado |
-|---|---|
-| 1er ingreso desde PE, sin cookie | `set-cookie locale=es-PE` + `<html lang="es-PE">` |
-| Cookie `es-MX`, GeoIP PE (difiere) | reescribe cookie a `es-PE` → traduce |
-| Cookie `es-MX`, GeoIP MX (coincide) | **no reescribe nada** (sin Set-Cookie) |
-| `?locale=en` | `en` siempre, independiente de la cookie |
-| País no mapeado (p. ej. CU, con navegador en inglés) | geo falla → `navigator.language` → `en` + **cookie `en`** |
-
-### País NO mapeado (caso pendiente de decisión)
-
-Cuando el país no está en `LOCALE_MAP` (p. ej. Cuba `CU`, Venezuela `VE`,
-Ecuador `EC`, Uruguay `UY`…) **la geo devuelve fallo (`unmapped_country`)** y el
-fallback usa `navigator.language`:
-
-- Navegador en español → `es-LA` (correcto, idioma neutro).
-- Navegador en inglés → `en` + **cookie `en` persistida** (la persona se queda en
-  inglés aunque su país sea hispanohablante).
-
-> ⚠️ Decisión abierta: añadir los países hispanohablantes a `LOCALE_MAP` como
-> `CU: "es-LA"`, `ES: "es-LA"`, `VE: "es-LA"` … para que la geo los lleve a
-> `es-LA` aunque el navegador sea inglés (sin coste: `es-LA` está embebido).
-
-**Verificación con curl** (simula el header del hosting):
-
-```bash
-curl -sI -H "cf-ipcountry: PE" http://localhost:3000/              # 1er ingreso → set-cookie es-PE
-curl -sI -H "cf-ipcountry: PE" -b "locale=es-MX" http://localhost:3000/  # difiere → reescribe es-PE
-curl -sI -H "cf-ipcountry: MX" -b "locale=es-MX" http://localhost:3000/  # coincide → sin Set-Cookie
-curl -sI "http://localhost:3000/?locale=en" -b "locale=es-MX"            # override → en
+```
+1. Traducción regional del país    (CO → es-CO)   — "su traducción", nunca se degrada
+2. Default por idioma del país     (CU, VE, ES → es-LA | NG, PH → en)
+3. Idioma del navegador            (navigator.language → es-LA | en)
+4. Default                         (es-LA)
 ```
 
-**Mitigación de límite** (api de geo externa gratuita ~1.000 req/día): la geo
-client-side externa solo se invoca cuando el hosting no entrega header de país y no
-hay cookie. En Vercel/Cloudflare la geo se resuelve por headers en cada request
-(sin llamada externa y sin límite).
+El fallback por idioma (`es-LA`/`en`) **solo** aplica a países sin traducción
+regional. Nunca reemplaza la traducción propia de un país cuando existe.
+
+### Logs de decisión (solo en desarrollo, `devLog`)
+
+La cadena completa es observable en consola:
+
+```
+[i18n] provisional (cookie) = en
+[i18n] geo éxito -> es-CO CO
+[i18n] geo difiere -> traducción
+[i18n] language final = es-CO
+[i18n][geo] país sin traducción regional: CU -> habla hispana -> es-LA
+[i18n][geo] país sin traducción ni idioma conocido: XK
+[i18n] XK sin traducción ni idioma conocido → se usará es-LA (navegador)
+```
 
 ---
 
@@ -91,7 +87,7 @@ Sin zustand ni otras librerías: el estado vive en React Context.
 
 ---
 
-## 3. Pasos 1 — Estructura de carpetas a crear
+## 3. Paso 1 — Estructura de carpetas a crear
 
 ```
 lib/locale/
@@ -99,6 +95,7 @@ lib/locale/
 │   ├── locale.types.ts
 │   ├── locale.config.ts
 │   ├── locale.constants.ts
+│   ├── locale-languages.ts     ← fallback por idioma de países sin traducción
 │   └── locale.errors.ts
 ├── infrastructure/
 │   ├── i18n.ts
@@ -111,7 +108,7 @@ lib/locale/
 │   └── locale-utils.ts
 └── server/
     └── server-metadata.ts
-app/components/locale/
+components/locale/
 ├── LocaleProvider.tsx
 ├── LocaleSplash.tsx
 ├── LanguageSwitcher.tsx
@@ -120,21 +117,22 @@ app/components/locale/
 
 ---
 
-## 4. Pasos 2 — Qué copiar tal cual vs. qué adaptar
+## 4. Paso 2 — Qué copiar tal cual vs. qué adaptar
 
 ### Copiar sin cambios (genérico)
 
 | Archivo | Notas |
 |---|---|
-| `geo-detection.service.ts` | Fuentes `cloudflare /cdn-cgi/trace` → fallback `ipwho.is/`; timeout 5 s; maneja 429/timeout/parse/unmapped |
+| `geo-detection.service.ts` | Fuentes `cloudflare /cdn-cgi/trace` → fallback `ipwho.is/`; timeout 5 s; maneja 429/timeout/parse/unmapped; devuelve `countryCode` para logs |
+| `locale-languages.ts` | `SPANISH_COUNTRIES` + `ENGLISH_COUNTRIES` + `fallbackLocaleForCountry` (es-LA/en/null) |
 | `locale-persistence.ts` | Solo cookie `locale` (maxAge 1 año, path=/) |
 | `locale-utils.ts` | `isLocaleSupported` + `getLocaleFromNavigator` |
-| `locale.types.ts` | `LocaleId`, `LocaleInfo`, `GeoResult`, `LocaleNamespace` |
+| `locale.types.ts` | `LocaleId`, `LocaleInfo`, `GeoResult` (con `countryCode`), `LocaleNamespace` |
 | `locale.errors.ts` | Códigos de error para logging |
 | `useLanguage.ts` | `{ t, i18n, locale, availableLocales, isReady, setPreference, resetLocale }` |
 | `useLocale.ts` | `formatNumber` / `formatDate` con `Intl` |
 | `LanguageSwitcher.tsx` | Dropdown de idiomas (solo visible en desarrollo) |
-| `LocaleProvider.tsx` | Lógica completa de init (bundle regional, geo, cookie, splash) |
+| `LocaleProvider.tsx` | Lógica completa de init (bundle regional, provisional, geo siempre, splash) |
 
 ### Adaptar a la landing (lo específico)
 
@@ -142,11 +140,12 @@ app/components/locale/
 |---|---|
 | `domain/locale.config.ts` | `SUPPORTED_LOCALES` (idiomas y países de tu público) y `LOCALE_MAP` (país→locale, p. ej. `BR: "pt-BR"`) |
 | `domain/locale.constants.ts` | `DEFAULT_LOCALE`, `COOKIE_KEY`, `LOCALE_NAMESPACES` (deben coincidir con las secciones de la landing) |
+| `domain/locale-languages.ts` | Ajustar `SPANISH_COUNTRIES`/`ENGLISH_COUNTRIES` a tu público (añadir `BR`, `PT` si soportas portugués…) |
 | `domain/locale.types.ts` | Unir los nombres/types de los ids de tus idiomas |
 | `infrastructure/i18n.ts` | Imports de los JSON embebidos (default + `en`) y registro de namespaces |
 | `server/server-metadata.ts` | Title/description por locale (SEO) |
 | `proxy.ts` (raíz) | Matcher (excluir `/locales`) y headers de país de tu hosting |
-| `app/components/locale/LocaleSplash.tsx` | Branding (logo/nombre de la marca) |
+| `components/locale/LocaleSplash.tsx` | Branding (logo/nombre de la marca) |
 
 ---
 
@@ -175,7 +174,7 @@ Reglas:
 
 1 archivo por locale regional (p. ej. `es-MX`, `es-AR`, `es-CL`, `es-CO`, `es-PE`), descargado por el cliente en runtime y cacheados por HTTP del navegador.
 
-Truco del árbol que respeta el proyecto: **copiar el neutro (`es-LA`) y cambiar SOLO lo regional** (los archivos regionales actuales `= copia idéntica` de es-LA).
+Truco que respeta el proyecto: **copiar el neutro (`es-LA`) y cambiar SOLO lo regional**.
 
 ### 5.3. Reemplazar strings hardcodeados
 
@@ -191,12 +190,12 @@ Truco del árbol que respeta el proyecto: **copiar el neutro (`es-LA`) y cambiar
 ### 6.1. `app/layout.tsx` (Server Component)
 
 ```tsx
-const locale = await resolveServerLocale(); // cookie + fallback default
+const locale = await resolveServerLocale(); // header del proxy → cookie → default
 return <html lang={locale}>… <LocaleProvider>{children}</LocaleProvider></html>
 ```
 
 - `generateMetadata()` → title/description por locale.
-- `await cookies()` (asíncronas en Next 16).
+- `await cookies()` / `await headers()` (asíncronas en Next 16).
 
 ### 6.2. `proxy.ts` (raíz)
 
@@ -206,19 +205,26 @@ export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico|rob
 ```
 
 Lógica (se evalúa en CADA request):
-1. `?locale=` → gana siempre (override de prueba) y se persiste.
-2. Geo del hosting: headers de país (`cf-ipcountry`, `x-vercel-ip-country` …) → `LOCALE_MAP`.
+1. `?locale=` → gana siempre (override de prueba).
+2. Geo del hosting: headers de país (`cf-ipcountry`, `x-vercel-ip-country` …) → `LOCALE_MAP` → si no hay traducción regional, `fallbackLocaleForCountry` (idioma del país).
 3. Cookie `locale` (solo si 1 y 2 no resolvieron).
-4. Header interno `I18N_LOCALE_HEADER` para el SSR (server-metadata, `<html lang>`).
-5. `NextResponse.next({ request: { headers } })` + `response.cookies.set(...)` **solo si el locale resuelto difiere de la cookie** (guarda: default sin cookie previa no se persiste).
+4. Header interno `I18N_LOCALE_HEADER` para el SSR.
+5. `NextResponse.next({ request: { headers } })` + `response.cookies.set(...)` solo si el locale resuelto difiere de la cookie (guarda: default sin cookie previa no se persiste).
+
+> `server/server-metadata.ts` (`resolveServerLocale`) lee **el header del proxy
+> ANTES que la cookie**: así el SSR respeta la decisión fresca de la geo en cada
+> request y no pinta idiomas viejos de la cookie al cambiar de país.
 
 ### 6.3. `LocaleProvider.tsx` (cliente)
 
-- Contexto expone `{ resolvedLocale, isReady, setPreference }`.
-- Init (una vez): `?locale=` → `<html lang>` SSR → cookie → geo → navigator → default.
-- Carga del bundle regional con `fetch(`/locales/${locale}/translation.json`)` + `i18next.addResourceBundle`.
+- Contexto expone `{ locale, isReady, setPreference, resetLocale }`.
+- Init (una vez): aplica un **provisional** para pintar al instante (`?locale=` → `<html lang>` SSR → cookie → navigator → default), y **siempre** ejecuta `detectGeoLocale()` en paralelo:
+  - geo ≠ provisional → `LocaleSplash` + carga del bundle regional + `changeLanguage` + cookie + `router.refresh()`.
+  - geo = provisional → no-op (sin re-traducir); solo sincroniza la cookie si difiere y no es el default.
+  - geo falla → se mantiene el provisional (log de decisión).
 - `setPreference` = cookie + `changeLanguage` + `router.refresh()`.
-- Muestra `LocaleSplash` mientras detecta geo (si no está listo).
+- `resetLocale` = limpia cookie + vuelve al default + refresh.
+- Splash: `{detecting && <LocaleSplash/>}` — cubre tanto el primer paint como el cambio de idioma por geo.
 
 ### 6.4. Hooks en tu código
 
@@ -232,26 +238,43 @@ const { formatNumber, formatDate } = useLocale();
 ## 7. Paso 5 — Checklist de verificación
 
 - [ ] `npm run lint` y `npm run build` sin errores.
-- [ ] `/?locale=es-MX` → muestra el regional en español (override, persiste vía proxy).
+- [ ] `/?locale=es-MX` → muestra el regional en español (override, sin persistencia).
 - [ ] 1er ingreso sin cookie → geo: cookie regional + `<html lang>` regional.
-- [ ] 2ª visita, geo difiere de la cookie → traduce y reescribe cookie.
-- [ ] 2ª visita, geo coincide con cookie → no reescribe nada (sin Set-Cookie).
-- [ ] Recarga → conserva idioma (cookie).
+- [ ] Visita con cookie vieja (p. ej. `en` de EE.UU.) desde otro país (p. ej. CO) → la geo gana: traduce a `es-CO` y reescribe la cookie.
+- [ ] Recarga en el mismo país → no-op (sin splash, sin Set-Cookie).
+- [ ] País sin traducción regional hispanohablante (CU) → `es-LA` (español neutro).
+- [ ] País sin traducción regional anglófono (NG) → `en`.
+- [ ] País sin traducción ni idioma conocido → navegador → default; log de decisión en consola (dev).
 - [ ] `<html lang>` y `<title>` correctos en SSR y tras cambio en vivo.
 - [ ] `LanguageSwitcher` cambia idioma + persiste + refresca SSR.
-- [ ] Fallback a default con navegador en otro idioma / geolocalización no mapeada.
-- [ ] Simulación: `curl -H "cf-ipcountry: PE" -b "locale=es-MX" http://localhost:3000/` → `set-cookie: locale=es-PE`.
+- [ ] Simulación SSR: `curl -H "cf-ipcountry: PE" -b "locale=es-MX" http://localhost:3002/` → `set-cookie: locale=es-PE` y `<html lang="es-PE">`.
 
 ---
 
 ## 8. Tipos clave
 
-- **1 sola cookie `locale`** → guarda el último país traducido; se reescribe solo si la geo difiere.
-- **Geo del hosting por headers en cada request** (cf-ipcountry, x-vercel-ip-country…) → sin llamada externa ni límites.
-- **Geo externa client-side (cloudflare trace → ipwho.is)** → solo cuando el hosting no entrega header y no hay cookie (mitiga el cupo ~1.000 req/día de ipwho.is).
+- **1 sola cookie `locale`** → guarda el último idioma aplicado; la geo puede reescribirla si el país cambió.
+- **Geo client-side SIEMPRE** (cloudflare trace → ipwho.is) → es la fuente de verdad, independiente del hosting.
+- **Geo del hosting por headers en cada request** → solo optimiza el primer paint del SSR.
+- **Fallback por idioma del país** (`locale-languages.ts`) → `es-LA`/`en` para países sin traducción regional, sin APIs externas y sin coste (ambos van embebidos).
 - **Bundles en `public/`** en lugar de embebidos para `es-MX`/`es-AR`…: cache HTTP de navegador, sin bloquear el primer render.
 - **Sin prefijo `/en` en URL y sin redirects:** ruteo cookie-only (más simple de mantener).
-- **`LanguageSwitcher` visible solo en desarrollo** (se oculta la producción para no exponer la elección manual).
+- **`LanguageSwitcher` visible solo en desarrollo** (se oculta en producción para no exponer la elección manual).
+
+---
+
+## 10. Mejora futura — Re-detección de geo en vivo (Opción B)
+
+**Contexto:** hoy la geo se ejecuta una sola vez por carga completa (boot del `LocaleProvider`). Si el visitante mantiene la página abierta y cambia de país, el idioma solo se actualiza al recargar o reabrir. Decisión de arquitectura vigente: **aceptado así por ahora (Opción A)** — la landing cubre el caso real (viajes se resuelven en la siguiente carga) sin coste ni sorpresas a mitad de interacción. Esta sección queda documentada por si mañana la evidencia lo pide (viajes frecuentes con pestaña abierta, o si la app pasa a tener sesión/tablero donde el idioma viejo sí molesta).
+
+**Diseño propuesto (B-lite), si se retoma:**
+
+- Escuchar `visibilitychange` (pestaña oculta → visible) y `online` en un segundo efecto del `LocaleProvider`.
+- Medir el tiempo con **timestamps reales** (`Date.now()` al ocultarse, comparar al volver). **No usar `setInterval`**: los timers se congelan cuando la pestaña está en segundo plano.
+- Umbral de re-chequeo: solo si la pestaña estuvo oculta **≥ 15–30 min** (evita fetchs innecesarios en cada foco de pestaña).
+- Guarda contra doble disparo: si `online` y `visibilitychange` ocurren juntos (red nueva al viajar), ejecutar **un solo** chequeo.
+- Flujo reusado, idéntico al boot: `detectGeoLocale()` → si geo ≠ locale actual → splash + `applyTarget(geo, true)` + `router.refresh()`; si coincide o falla → no-op con log de decisión.
+- Misma política: geo gana siempre (incluso sobre elección manual del usuario).
 
 ---
 
@@ -259,5 +282,6 @@ const { formatNumber, formatDate } = useLocale();
 
 1. ¿Qué locales/países soporta tu público? → `SUPPORTED_LOCALES` + `LOCALE_MAP`.
 2. ¿Cuál es el default? → `DEFAULT_LOCALE`.
-3. ¿Qué headers de país pone tu hosting? → matcher en `proxy.ts`.
+3. ¿Qué headers de país pone tu hosting? → matcher en `proxy.ts` (`COUNTRY_HEADERS`).
 4. ¿Qué secciones tiene la landing? → lista de `LOCALE_NAMESPACES`.
+5. ¿Qué países hispano/anglófonos cubrir en el fallback? → `SPANISH_COUNTRIES`/`ENGLISH_COUNTRIES` en `locale-languages.ts`.
